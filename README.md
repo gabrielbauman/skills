@@ -9,6 +9,7 @@ independently.
 | Skill | Description |
 | --- | --- |
 | [adr-workflow](skills/adr-workflow/) | ADR-driven development: atomic, immutable Architecture Decision Records as the sole behavioural spec, strict spec/code commit separation, inline ADR tags in code, and git-hook enforcement tooling (bundled in [scripts/](skills/adr-workflow/scripts/)). |
+| [atomic-commits](skills/atomic-commits/) | Decide what each git commit should contain: one self-contained, reviewable change per commit. Covers splitting a mixed working tree into an ordered series with `git add -p`, when a split is artificial, and keeping discovered fixes out of feature commits. Pairs with scoped-commits, which covers the message. |
 | [humanize](skills/humanize/) | Write prose that reads like a person wrote it, and strip AI tells from existing text: em-dash addiction, negative parallelism, inflated vocabulary, bold-first bullets, manufactured drama. Compact checklist by default, full trope catalog on demand. |
 | [scoped-commits](skills/scoped-commits/) | Write commit messages in the [Scoped Commits](https://scopedcommits.com) style: `scope: description`, the way Linux, Go, Git, FreeBSD, and nixpkgs write their history. Includes a concise, plain-ASCII house style for the message text (no emoji, no em dashes, no filler). |
 

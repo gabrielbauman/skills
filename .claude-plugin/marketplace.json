@@ -18,6 +18,15 @@
       "skills": ["./skills/adr-workflow"]
     },
     {
+      "name": "atomic-commits",
+      "description": "Decide what each git commit should contain: one self-contained, reviewable change per commit, splitting a mixed working tree into an ordered series with git add -p instead of one everything-commit",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["git", "commits", "version-control", "review"],
+      "skills": ["./skills/atomic-commits"]
+    },
+    {
       "name": "humanize",
       "description": "Write prose that reads like a person wrote it and strip AI tells from existing text: em-dash addiction, negative parallelism, inflated vocabulary, bold-first bullets, manufactured drama",
       "source": "./",
