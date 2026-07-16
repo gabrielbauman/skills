@@ -87,6 +87,26 @@ about to make; each one that could change independently is its own ADR.
 Commit them together in one spec commit if they land together — a spec commit
 may contain several new ADRs.
 
+## Reverse-engineered ADRs (onboarded repos)
+
+In a repo onboarded with a baseline ADR, some ADRs record decisions that were
+made long before the ADR set existed — written when a task touches
+grandfathered behaviour, or during an optional survey of load-bearing
+decisions. Rules for writing them honestly:
+
+- The Context section must say the decision was reverse-engineered from code
+  (name the baseline commit) and mark the rationale as inferred or unknown.
+  Never invent a rationale; a record that guesses silently cannot be trusted
+  at all, and trustworthiness is the entire point of the set.
+- Carve-out ADRs carry no `Supersedes:` line for the baseline — the baseline
+  stays live and simply covers less. Supersession works normally between
+  explicit ADRs: changing an already-extracted decision supersedes the
+  extraction ADR.
+- Only the graduation ADR supersedes the baseline, and only when nothing
+  meaningful remains grandfathered.
+- The user approves each reverse-engineered ADR before it is committed; they
+  may know the real rationale where you can only infer it.
+
 ## What is NOT an ADR
 
 - Proposals under discussion — those live in the conversation with the user.

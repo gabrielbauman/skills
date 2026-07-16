@@ -50,6 +50,25 @@
         "every code commit declares authority (Implements:/Exempt: trailer)",
         "adr_tools validate passes on final state"
       ]
+    },
+    {
+      "id": 3,
+      "name": "onboard-existing-codebase",
+      "prompt": "This little converter project has been around for a while with no process at all. Adopt strict ADR-driven development here without rewriting history, then make one change: c2f and f2c should print the result with exactly 2 decimal places instead of 1.",
+      "expected_output": "Repo onboarded via init --existing: baseline ADR grandfathers pre-adoption behaviour at a pinned commit; no bulk reverse-engineered ADRs; the precision change gets its own carve-out ADR committed before the code change; hooks installed; validate passes.",
+      "files": ["fixtures/ungoverned-repo"],
+      "expectations": [
+        "a baseline ADR exists that grandfathers pre-adoption behaviour and names a specific commit",
+        "no bulk reverse-engineering: only a handful of ADRs total (adoption, baseline, precision, at most a couple more)",
+        "the precision change is specified by its own ADR that does NOT carry a Supersedes: line for the baseline",
+        "spec commit for the precision ADR lands before the code commit changing convert.py",
+        "no commit mixes docs/adr/ and code paths",
+        "pre-existing git history is intact (original 'initial commit' and 'add converter' commits still present)",
+        "changed code carries an inline tag for the precision ADR, not the baseline",
+        "behaviour: `convert.py c2f 0` prints exactly '32.00'",
+        "every code commit declares authority (Implements:/Exempt: trailer)",
+        "adr_tools validate passes on final state"
+      ]
     }
   ]
 }

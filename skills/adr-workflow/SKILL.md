@@ -40,11 +40,9 @@ behaviour.
   know what the live spec says.
 - **User asks to adopt the workflow in an empty/new repo** → follow "Setting
   up".
-- **User asks to adopt it in a repo that already has code** → v1 is
-  greenfield-only. Explain that adopting an existing codebase requires a
-  baseline specification effort this workflow doesn't yet support, and offer
-  to set it up in a fresh repo instead. (`init` refuses non-greenfield repos
-  for this reason.)
+- **User asks to adopt it in a repo that already has code** → follow
+  "Onboarding an existing codebase". Never try to specify the whole codebase
+  up front.
 
 ## Setting up a repo
 
@@ -59,6 +57,52 @@ behaviour.
    tooling as a code commit with `Implements: ADR-0001` (the tooling is the
    implementation of the workflow decision).
 4. Everything after that follows "Making a change".
+
+## Onboarding an existing codebase
+
+Onboarding must not mean reverse-engineering the code into hundreds of ADRs:
+bulk-generated ADRs need invented rationale, and a record with fabricated
+context is worse than no record. Instead, existing behaviour is grandfathered
+under one **baseline ADR** and extracted into real ADRs as code changes.
+
+1. Make sure the current state is committed, then copy `scripts/adr_tools.py`
+   from this skill to `tools/adr/adr_tools.py` and run `python3
+   tools/adr/adr_tools.py init --existing`. Besides ADR-0001 this scaffolds
+   ADR-0002, the baseline: all behaviour at the pinned commit is provisionally
+   accepted, and for each behaviour the code itself is the spec until a live
+   ADR specifies it explicitly, from which point the ADR takes precedence.
+2. Review both ADRs with the user and commit in the order init prints. From
+   then on every change follows "Making a change", with two brownfield
+   readings:
+   - Changing grandfathered behaviour is a **spec change** — the change is
+     the moment the decision first gets made explicitly. The new ADR carves
+     the behaviour out of the baseline: no `Supersedes:` line, precedence is
+     automatic.
+   - A **bugfix** in grandfathered code means restoring its evident intent
+     (a crash, an off-by-one); cite the baseline ADR in the commit body, and
+     do not tag the code with the baseline id. A fix that chooses between
+     plausible behaviours is a spec change.
+3. **Extract as you touch.** When a task depends on grandfathered behaviour,
+   write the ADR(s) for the decisions it touches as part of that task. Never
+   specify code you are not touching — coverage grows along the paths that
+   actually change, which is where spec value is highest.
+4. Optionally offer a bounded survey: draft ADRs for the few load-bearing,
+   clearly deliberate decisions (wire formats, storage schema, authz model),
+   each honest about its origin (see "Reverse-engineered ADRs" in
+   [references/adr-authoring.md](references/adr-authoring.md)) and approved
+   by the user, who may know the real rationale. A dozen honest ADRs beat
+   three hundred confabulated ones.
+5. `adr_tools.py coverage` reports which files carry ADR tags. It never
+   fails; a hard ratchet would just be the specify-everything-first plan in
+   disguise.
+6. **Graduation.** When nothing meaningful remains grandfathered, write one
+   final ADR superseding the baseline, declaring the ADR set complete. The
+   repo then carries the full greenfield guarantee.
+
+Until graduation, the guarantee reads: every behaviour is either explicitly
+specified or visibly grandfathered at a known commit, and grandfathered
+behaviour cannot change without becoming specified. Say this plainly when the
+user asks what the ADR set covers.
 
 ## Making a change
 
@@ -154,10 +198,11 @@ in the repo:
 
 | Command | What it does |
 |---------|--------------|
-| `init` | Scaffold `docs/adr/` + ADR-0001, copy tooling, install hooks (greenfield only; `--force` overrides) |
+| `init` | Scaffold `docs/adr/` + ADR-0001, copy tooling, install hooks. Greenfield by default; `--existing` onboards a codebase by also generating the ADR-0002 baseline (`--force` skips the check and grandfathers nothing) |
 | `new "Title" [--supersedes 7]` | Create the next-numbered ADR from the template |
 | `status` | Table of every ADR: live/superseded-by, code-ref count |
 | `spec` | Render the live spec as one document: every live ADR's Decision section, in number order. A generated view for humans (and agents) — never commit the output; the ADRs are the authority |
+| `coverage` | Report which tracked files carry ADR tags and which remain untagged (grandfathered or non-code). Informational, never an error |
 | `validate` | Full audit: lint, numbering, supersession graph, immutability vs git history, stale/dangling code refs, coverage warnings |
 | `check-staged` / `check-msg` | The hook entry points (run automatically on commit) |
 | `install-hooks` | (Re)install hooks in an already-governed clone — run this after cloning, since hooks don't travel with the repo |

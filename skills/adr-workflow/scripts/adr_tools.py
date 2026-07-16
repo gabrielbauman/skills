@@ -539,17 +539,77 @@ ADR mechanically surfaces every piece of code that must migrate.
 """
 
 
+# Assembled at runtime so this file carries no scannable reference to the
+# baseline: graduation supersedes it, and a literal id here would then fail
+# validate as a stale code ref in every graduated repo. (Literal ADR-0001
+# refs stay: the tooling implements the adoption decision, and superseding
+# that decision SHOULD flag this file for migration.)
+BASELINE_ID = "ADR-" + "0002"
+
+BASELINE_ADR = """\
+# {bid}: Accept pre-adoption behaviour as the provisional baseline
+
+- Date: {today}
+
+## Context
+
+This repository adopted ADR-driven development (ADR-0001) with an existing
+codebase. Its behaviour predates the ADR set, and the original rationale for
+most of its decisions is unrecorded. Specifying everything before adopting
+would take unbounded effort, and ADRs reverse-engineered in bulk would need
+invented context, making the record untrustworthy from day one.
+
+## Decision
+
+All behaviour present in the code at commit {sha} is provisionally accepted.
+For any given behaviour, the code at that commit is its specification until
+a live ADR specifies that behaviour explicitly; from then on the ADR takes
+precedence. New ADRs carve behaviour out of this baseline; they do not carry
+a `Supersedes:` line pointing at it.
+
+Changing grandfathered behaviour requires an ADR first, like any other spec
+change. Restoring grandfathered code to its evident intent (a crash, an
+off-by-one) is a bugfix citing this ADR in the commit body; a fix that
+chooses between plausible behaviours is a spec change.
+
+This ADR is superseded only when the live ADR set specifies the system's
+behaviour completely and nothing remains grandfathered.
+
+## Consequences
+
+The repository guarantee is: every behaviour is either explicitly specified
+by a live ADR or visibly grandfathered at commit {sha}, and grandfathered
+behaviour cannot change without becoming specified. The record never lies,
+but it admits what it does not know yet. Coverage grows along the code paths
+that change; `adr_tools.py coverage` reports progress toward superseding
+this ADR.
+"""
+
+
 def cmd_init(args):
     root = repo_root()
-    if not args.force:
+    baseline_sha = None
+    if args.existing:
+        if not has_head():
+            die("--existing needs committed history; for an empty repo run "
+                "plain `init`")
+        baseline_sha = run("git", "rev-parse", "HEAD").stdout.strip()
+        # Untracked files are fine (the tooling copy itself is one); only
+        # tracked modifications mean behaviour differs from the pinned SHA.
+        if run("git", "status", "--porcelain", "-uno").stdout.strip():
+            print("warning: tracked files have uncommitted changes; the "
+                  "baseline covers committed state only, so commit or stash "
+                  "first if those changes carry behaviour")
+    elif not args.force:
         tracked = run("git", "ls-files").stdout.splitlines()
         offending = [p for p in tracked
                      if not p.lower().startswith(GREENFIELD_ALLOW)]
         if offending:
-            die("this repository already has committed files, and v1 of the "
-                "ADR workflow is greenfield-only (adopting an existing "
-                "codebase needs a baseline specification effort that this "
-                "tooling does not yet support). First offenders:\n  "
+            die("this repository already has committed files. Run `init "
+                "--existing` to onboard it: pre-adoption behaviour is "
+                "grandfathered under a baseline ADR and extracted into real "
+                "ADRs as code changes. (`--force` skips this check and "
+                "grandfathers nothing.) First offenders:\n  "
                 + "\n  ".join(offending[:10]))
 
     (root / ADR_DIR).mkdir(parents=True, exist_ok=True)
@@ -559,13 +619,30 @@ def cmd_init(args):
         shutil.copyfile(__file__, tool_dst)
         print(f"copied tooling to {TOOL_REPO_PATH}")
 
-    adr1 = root / ADR_DIR / "0001-adopt-adr-driven-development.md"
     if not any((root / ADR_DIR).glob("*.md")):
+        adr1 = root / ADR_DIR / "0001-adopt-adr-driven-development.md"
         adr1.write_text(ADR_0001.format(today=date.today().isoformat()),
                         encoding="utf-8")
         print(f"created {ADR_DIR}/{adr1.name}")
+        if baseline_sha:
+            adr2 = (root / ADR_DIR /
+                    "0002-accept-pre-adoption-behaviour-as-baseline.md")
+            adr2.write_text(
+                BASELINE_ADR.format(bid=BASELINE_ID,
+                                    today=date.today().isoformat(),
+                                    sha=baseline_sha),
+                encoding="utf-8")
+            print(f"created {ADR_DIR}/{adr2.name} (baseline: {baseline_sha[:12]})")
     install_hooks(root)
-    print("""
+    if baseline_sha:
+        print(f"""
+next steps (review first, then two commits, in this order):
+  1. review ADR-0001 and the {BASELINE_ID} baseline with the user, then
+     spec commit:  git add docs/adr && git commit -m "spec: adopt ADR-driven development with baseline"
+  2. code commit:  git add tools && git commit -m "code: add workflow tooling" \\
+                   -m "Implements: ADR-0001" """)
+    else:
+        print("""
 next steps (two commits, in this order):
   1. spec commit:  git add docs/adr && git commit -m "spec: adopt ADR-driven development"
   2. code commit:  git add tools && git commit -m "code: add workflow tooling" \\
@@ -573,22 +650,62 @@ next steps (two commits, in this order):
     return 0
 
 
+def cmd_coverage(args):
+    """Report which tracked files carry ADR tags.
+
+    Informational only, never an error: in an onboarded repo, untagged
+    files are usually grandfathered under the baseline ADR, and a failing
+    ratchet would just be the rejected specify-everything-up-front plan
+    in disguise.
+    """
+    root = repo_root()
+    tracked = run("git", "-C", str(root), "ls-files").stdout.splitlines()
+    tagged, untagged = [], []
+    for relpath in tracked:
+        if is_spec_path(relpath) or any(part in SKIP_DIRS
+                                        for part in relpath.split("/")):
+            continue
+        fp = root / relpath
+        try:
+            if not fp.is_file() or fp.stat().st_size > 1_000_000:
+                continue
+            text = fp.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        (tagged if REF_RE.search(text) else untagged).append(relpath)
+    total = len(tagged) + len(untagged)
+    if not total:
+        print("no scannable tracked files")
+        return 0
+    print(f"{len(tagged)} of {total} scanned files carry ADR tags")
+    if untagged:
+        print("\nuntagged (grandfathered under the baseline ADR, or non-code):")
+        for p in untagged:
+            print(f"  {p}")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("init").add_argument("--force", action="store_true")
+    p = sub.add_parser("init")
+    p.add_argument("--force", action="store_true")
+    p.add_argument("--existing", action="store_true",
+                   help="onboard an existing codebase: grandfather current "
+                        "behaviour under a baseline ADR")
     p = sub.add_parser("new")
     p.add_argument("title")
     p.add_argument("--supersedes", help="comma-separated ADR numbers")
     sub.add_parser("validate")
     sub.add_parser("status")
     sub.add_parser("spec")
+    sub.add_parser("coverage")
     sub.add_parser("check-staged")
     sub.add_parser("check-msg").add_argument("msgfile")
     sub.add_parser("install-hooks")
     args = ap.parse_args()
     fn = {"init": cmd_init, "new": cmd_new, "validate": cmd_validate,
-          "status": cmd_status, "spec": cmd_spec,
+          "status": cmd_status, "spec": cmd_spec, "coverage": cmd_coverage,
           "check-staged": cmd_check_staged, "check-msg": cmd_check_msg,
           "install-hooks": cmd_install_hooks}[args.cmd]
     sys.exit(fn(args))
