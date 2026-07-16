@@ -12,7 +12,16 @@ independently.
 
 ## Installation
 
-**Claude Code** — copy a skill into your user or project skills directory:
+**Claude Code (plugin marketplace)** — this repo is a plugin marketplace, so
+each skill installs as a plugin and stays updateable:
+
+```
+/plugin marketplace add gabrielbauman/skills
+/plugin install scoped-commits@gabrielbauman
+```
+
+**Claude Code (manual copy)** — copy a skill into your user or project skills
+directory:
 
 ```sh
 git clone https://github.com/gabrielbauman/skills
