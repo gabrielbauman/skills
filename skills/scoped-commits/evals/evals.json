@@ -10,7 +10,8 @@
         "Commit subject matches the pattern '<scope>: <description>'",
         "Scope is 'auth' (reused from existing history), not a newly invented near-duplicate",
         "Subject does not start with a Conventional Commits type (feat, fix, chore, refactor, docs)",
-        "Description is in imperative mood with no trailing period"
+        "Description is in imperative mood with no trailing period",
+        "Message contains no emoji, em dashes, or Markdown formatting"
       ]
     },
     {
@@ -20,19 +21,33 @@
       "files": [],
       "assertions": [
         "Commit subject matches '<scope>: <description>'",
-        "No Conventional Commits type prefix is used"
+        "No Conventional Commits type prefix is used",
+        "Message contains no emoji or em dashes"
       ]
     },
     {
       "id": 3,
       "prompt": "Rewrite these commit messages to follow our project's commit style (CLAUDE.md says we use scoped commits): 1) 'feat(parser): added support for YAML anchors' 2) 'fix: bug' 3) 'Updated documentation and fixed typos in the API reference'",
-      "expected_output": "Rewrites like 'parser: add support for YAML anchors', 'docs: fix typos in API reference', with each subject scope-first, imperative, and specific.",
+      "expected_output": "Rewrites like 'parser: add support for YAML anchors', 'docs: fix typos in API reference', with each subject scope-first, imperative, and specific. For 'fix: bug' the agent should recover specifics from the actual change or ask, not invent them.",
       "files": [],
       "assertions": [
         "All rewritten subjects match '<scope>: <description>'",
         "Type prefixes (feat, fix) are removed rather than kept as scopes",
-        "Vague descriptions are made specific",
-        "Imperative mood is used ('add', not 'added')"
+        "Imperative mood is used ('add', not 'added')",
+        "For 'fix: bug', the agent asks for or looks up the underlying change instead of inventing a fictional description"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I refactored this service so rate limiting happens in one shared middleware instead of separately in each of the six HTTP handlers (search had no limiter at all before). Commit it with a message that explains the change for posterity. Make it a really good, detailed commit message!",
+      "expected_output": "A scoped subject like 'api: move rate limiting into shared middleware' with a short prose body explaining why, despite the prompt inviting an overwrought message.",
+      "files": [],
+      "assertions": [
+        "Subject matches '<scope>: <description>' and stays under ~72 characters",
+        "Body is prose paragraphs, not a bullet list restating the diff ('Added X / Updated Y / Removed Z')",
+        "Body explains why (drifting per-handler limits, missing limiter on search), not just what",
+        "No emoji, em dashes, Markdown headings/bold, or 'Key changes:' style sections",
+        "No inflated adjectives (comprehensive, robust, seamless) or negative parallelism"
       ]
     }
   ]
