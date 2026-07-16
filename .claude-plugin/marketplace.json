@@ -54,6 +54,15 @@
       "skills": ["./skills/scoped-commits"]
     },
     {
+      "name": "small-changesets",
+      "description": "Keep each branch or PR down to one reviewable idea: state a scope contract before coding, park drive-by fixes instead of folding them in, and split big asks into a planned series of self-contained steps, refactor first",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["git", "pull-requests", "review", "scope", "workflow"],
+      "skills": ["./skills/small-changesets"]
+    },
+    {
       "name": "why-comments",
       "description": "Write code comments that explain why, never what: comment only on constraints, invariants, workarounds, and rejected alternatives, strip narration noise, keep docstrings as contracts, and enforce TODO hygiene",
       "source": "./",
