@@ -26,7 +26,10 @@ dashes, no filler, bodies as short why-focused paragraphs.
    existing pattern: `source: "./"`, `strict: false`, and a `skills` array
    pointing at `./skills/<name>`.
 3. Add a row to the skills table in `README.md`.
-4. Run `claude plugin validate .` and make sure it passes before committing.
+4. Run `claude plugin validate .` and `python3 scripts/check_skills.py`
+   (needs PyYAML) and make sure both pass before committing. CI runs the same
+   checks plus a skills.sh discovery test, and lints PR commit subjects for
+   the scoped format.
 
 ## Prose style
 

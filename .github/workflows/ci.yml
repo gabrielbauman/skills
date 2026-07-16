@@ -1,0 +1,57 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check skills, marketplace sync, and bundled scripts
+        run: |
+          pip install --quiet pyyaml
+          python3 scripts/check_skills.py
+
+      - name: Validate marketplace manifest with Claude Code
+        run: |
+          npm install -g --silent @anthropic-ai/claude-code
+          claude plugin validate .
+
+      - name: Check skills.sh CLI discovers every skill
+        run: |
+          expected=$(ls -d skills/*/ | wc -l)
+          out=$(timeout 120 npx -y skills add . --list 2>&1) || true
+          echo "$out" | grep -o 'Found [0-9]* skill' || true
+          found=$(echo "$out" | grep -o 'Found [0-9]* skill' | grep -o '[0-9]*' || echo 0)
+          if [ "$found" != "$expected" ]; then
+            echo "skills.sh CLI found $found of $expected skills; a SKILL.md is likely being dropped (strict YAML?)"
+            exit 1
+          fi
+
+  commit-style:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check subjects follow scoped commits
+        run: |
+          bad=0
+          while IFS= read -r subject; do
+            case "$subject" in
+              Merge*|Revert*|fixup!*|squash!*) continue ;;
+            esac
+            if ! echo "$subject" | grep -qE '^[^:]+: .+'; then
+              echo "not 'scope: description': $subject"; bad=1
+            fi
+            if [ "${#subject}" -gt 72 ]; then
+              echo "subject over 72 chars: $subject"; bad=1
+            fi
+          done < <(git log --format=%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }})
+          exit $bad
