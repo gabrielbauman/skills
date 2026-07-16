@@ -96,6 +96,11 @@ now.
 
 - Remove noise comments in code you are already touching; leave the rest of
   the file alone. Comment cleanup across untouched code is its own change.
+- Some comments are read by tools, not people: linter and formatter
+  directives (`# noqa`, `eslint-disable-next-line`), coverage pragmas,
+  process tags like ADR references. They say nothing to a reader and are
+  still load-bearing; leave them unless you mean to change what they
+  control.
 - Update any comment your edit makes wrong. A stale comment is worse than
   none.
 - Never delete a comment stating a constraint you don't understand. It may
