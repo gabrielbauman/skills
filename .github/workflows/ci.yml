@@ -24,9 +24,9 @@ jobs:
       - name: Check skills.sh CLI discovers every skill
         run: |
           expected=$(ls -d skills/*/ | wc -l)
-          out=$(timeout 120 npx -y skills add . --list 2>&1) || true
+          out=$(timeout 120 npx -y skills add . --list 2>&1 | sed $'s/\x1b\\[[0-9;]*m//g') || true
           echo "$out" | grep -o 'Found [0-9]* skill' || true
-          found=$(echo "$out" | grep -o 'Found [0-9]* skill' | grep -o '[0-9]*' || echo 0)
+          found=$(echo "$out" | grep -o 'Found [0-9]* skill' | head -1 | grep -o '[0-9]*' || echo 0)
           if [ "$found" != "$expected" ]; then
             echo "skills.sh CLI found $found of $expected skills; a SKILL.md is likely being dropped (strict YAML?)"
             exit 1
