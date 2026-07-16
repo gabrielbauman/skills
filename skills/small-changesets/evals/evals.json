@@ -1,0 +1,40 @@
+{
+  "skill_name": "small-changesets",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add retry with exponential backoff to the S3 upload client in internal/storage/s3.go. While you're in there, the error messages in that file are inconsistent, feel free to clean those up too, and I think download could use retries as well someday.",
+      "expected_output": "The agent states a scope contract limited to retry on the upload path, implements only that, and parks the error-message cleanup and download retries as follow-ups (issue, task list, or a follow-ups note) instead of folding them into the change.",
+      "files": [],
+      "assertions": [
+        "Before or at the start of coding, the agent states what the change will and will not touch",
+        "The diff touches only the upload retry change and its tests, not error-message rewording across the file",
+        "The error-message cleanup and download retries are explicitly parked as follow-ups, not silently done and not silently dropped",
+        "No speculative scaffolding (e.g. a generic retry framework for future callers) is added beyond what the upload path needs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We need per-tenant quotas on the ingest service: config for limits, usage accounting, enforcement with 429s, and admin visibility into current usage. Plan how you'd land this, then start on the first piece.",
+      "expected_output": "The agent plans a series of self-contained changesets before writing code (e.g. preparatory refactor or accounting first, then enforcement, then admin visibility), where each step is green, independently valuable, and independently revertible, then implements only the first step.",
+      "files": [],
+      "assertions": [
+        "The agent plans the series before writing code, not after producing one big diff",
+        "Each planned step is described as independently landable and valuable, not 'part 1 of N that does nothing by itself'",
+        "Preparatory or mechanical work is ordered before the behavior change that depends on it",
+        "The agent implements only the first step rather than the whole feature in one changeset"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Fix the off-by-one in the pagination cursor in api/list.go. Heads up: the file also has a deprecated helper nobody removed, tabs mixed with spaces, and a handler that should really be renamed. The whole file is kind of a mess.",
+      "expected_output": "The agent fixes only the off-by-one with a test, and parks the deprecated helper removal, whitespace cleanup, and rename as separate follow-ups. The diff stays small enough that the actual fix is not buried in mechanical churn.",
+      "assertions": [
+        "The diff contains the off-by-one fix and its test, without reformatting, the rename, or the helper removal",
+        "The other problems are acknowledged and parked (issue, follow-up list), not fixed in the same changeset",
+        "The agent does not mix mechanical cleanup with the behavior fix even though both touch the same file"
+      ],
+      "files": []
+    }
+  ]
+}
