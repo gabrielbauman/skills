@@ -9,6 +9,15 @@
   },
   "plugins": [
     {
+      "name": "adr-workflow",
+      "description": "ADR-driven development: atomic, immutable Architecture Decision Records as the sole behavioural spec, strict spec/code commit separation, inline ADR tags in code, and git-hook enforcement tooling",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["adr", "architecture", "documentation", "governance", "git"],
+      "skills": ["./skills/adr-workflow"]
+    },
+    {
       "name": "scoped-commits",
       "description": "Write git commit messages in the Scoped Commits style (scope: description), with a concise plain-ASCII house style: no emoji, no em dashes, no filler",
       "source": "./",

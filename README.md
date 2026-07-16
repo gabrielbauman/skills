@@ -8,6 +8,7 @@ independently.
 
 | Skill | Description |
 | --- | --- |
+| [adr-workflow](skills/adr-workflow/) | ADR-driven development: atomic, immutable Architecture Decision Records as the sole behavioural spec, strict spec/code commit separation, inline ADR tags in code, and git-hook enforcement tooling (bundled in [scripts/](skills/adr-workflow/scripts/)). |
 | [scoped-commits](skills/scoped-commits/) | Write commit messages in the [Scoped Commits](https://scopedcommits.com) style: `scope: description`, the way Linux, Go, Git, FreeBSD, and nixpkgs write their history. Includes a concise, plain-ASCII house style for the message text (no emoji, no em dashes, no filler). |
 
 ## Installation
@@ -39,7 +40,8 @@ skills/
 └── <skill-name>/
     ├── SKILL.md               # the skill itself
     ├── references/            # docs the skill loads on demand
-    └── evals/                 # test prompts for skill evaluation
+    ├── scripts/               # executable tooling bundled with the skill
+    └── evals/                 # test prompts and fixtures for skill evaluation
 ```
 
 ## License
