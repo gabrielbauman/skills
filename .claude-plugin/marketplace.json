@@ -43,6 +43,15 @@
       "category": "workflow",
       "tags": ["git", "commits", "version-control", "style"],
       "skills": ["./skills/scoped-commits"]
+    },
+    {
+      "name": "why-comments",
+      "description": "Write code comments that explain why, never what: comment only on constraints, invariants, workarounds, and rejected alternatives, strip narration noise, keep docstrings as contracts, and enforce TODO hygiene",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["comments", "code-quality", "documentation", "style"],
+      "skills": ["./skills/why-comments"]
     }
   ]
 }
