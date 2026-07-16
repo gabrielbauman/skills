@@ -27,6 +27,15 @@
       "skills": ["./skills/atomic-commits"]
     },
     {
+      "name": "changelog",
+      "description": "Write CHANGELOG.md entries by curating the diff for end users instead of transcribing the git log: Common Changelog format, breaking changes bolded first with migration pointers, and rules for what deserves no entry at all",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["changelog", "release", "git", "documentation"],
+      "skills": ["./skills/changelog"]
+    },
+    {
       "name": "humanize",
       "description": "Write prose that reads like a person wrote it and strip AI tells from existing text: em-dash addiction, negative parallelism, inflated vocabulary, bold-first bullets, manufactured drama",
       "source": "./",
