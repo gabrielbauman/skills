@@ -1,0 +1,39 @@
+{
+  "skill_name": "scoped-commits",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I've staged some changes in this repo that add input validation to the login handler in internal/auth/. The repo's git log shows subjects like 'storage: retry uploads on transient errors' and 'auth: add token refresh'. Please commit the staged changes with an appropriate message.",
+      "expected_output": "A commit with subject like 'auth: validate login input' — scope-first, imperative, lowercase after colon, no Conventional Commits type prefix.",
+      "files": [],
+      "assertions": [
+        "Commit subject matches the pattern '<scope>: <description>'",
+        "Scope is 'auth' (reused from existing history), not a newly invented near-duplicate",
+        "Subject does not start with a Conventional Commits type (feat, fix, chore, refactor, docs)",
+        "Description is in imperative mood with no trailing period"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This is a brand-new project I just scaffolded (a Python CLI in src/todocli/ plus a README). Initialize git and make the first commit.",
+      "expected_output": "First commit uses a scoped subject such as 'todocli: scaffold initial CLI' or similar scope-first message, not 'Initial commit' with no scope and not 'feat: initial commit'.",
+      "files": [],
+      "assertions": [
+        "Commit subject matches '<scope>: <description>'",
+        "No Conventional Commits type prefix is used"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Rewrite these commit messages to follow our project's commit style (CLAUDE.md says we use scoped commits): 1) 'feat(parser): added support for YAML anchors' 2) 'fix: bug' 3) 'Updated documentation and fixed typos in the API reference'",
+      "expected_output": "Rewrites like 'parser: add support for YAML anchors', 'docs: fix typos in API reference', with each subject scope-first, imperative, and specific.",
+      "files": [],
+      "assertions": [
+        "All rewritten subjects match '<scope>: <description>'",
+        "Type prefixes (feat, fix) are removed rather than kept as scopes",
+        "Vague descriptions are made specific",
+        "Imperative mood is used ('add', not 'added')"
+      ]
+    }
+  ]
+}
