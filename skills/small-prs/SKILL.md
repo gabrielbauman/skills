@@ -1,11 +1,13 @@
 ---
-name: small-changesets
+name: small-prs
 description: "Keep each branch or PR down to one reviewable idea by deciding scope before writing code: state a scope contract (what the change will and will not touch), park everything discovered along the way instead of fixing it in passing, and split big asks into a planned series of self-contained steps (refactor first, then the small behavior change on top). Use this skill when starting any coding task that could grow beyond a few files, when planning a branch or PR, when a prompt bundles extra work ('while you're in there, also...'), when you notice unrelated problems mid-task, when asked to keep PRs small or split work into reviewable pieces, and before opening any PR to check the diff against the declared scope. Complements atomic-commits, which splits a finished tree into commits; this skill decides what goes into the branch at all."
 ---
 
-# Small Changesets
+# Small PRs
 
-A changeset is the unit a reviewer approves: the branch, the PR, the patch.
+A PR is one changeset, the unit a reviewer approves; everything here applies
+equally to the branch, the patch, or the CL, whatever your review culture
+calls that unit.
 Google's [small-CL
 guidance](https://google.github.io/eng-practices/review/developer/small-cls.html)
 defines the target: one CL is one self-contained change, and small CLs are

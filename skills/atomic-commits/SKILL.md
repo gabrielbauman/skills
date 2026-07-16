@@ -1,6 +1,6 @@
 ---
 name: atomic-commits
-description: "Decide what each git commit should contain: one self-contained, reviewable change per commit, with a mixed working tree split into an ordered series instead of one everything-commit. Use this skill every time you are about to commit and the working tree holds more than one logical change (a feature plus an unrelated fix, a rename plus behavior changes, the accumulated output of a long session), when asked to split, stage, reorder, or clean up commits, and when planning how to commit as you work. Complements scoped-commits, which covers only the message, and small-changesets, which decides what belongs in the branch at all; this skill covers what goes in each commit."
+description: "Decide what each git commit should contain: one self-contained, reviewable change per commit, with a mixed working tree split into an ordered series instead of one everything-commit. Use this skill every time you are about to commit and the working tree holds more than one logical change (a feature plus an unrelated fix, a rename plus behavior changes, the accumulated output of a long session), when asked to split, stage, reorder, or clean up commits, and when planning how to commit as you work. Complements scoped-commits, which covers only the message, and small-prs, which decides what belongs in the branch at all; this skill covers what goes in each commit."
 ---
 
 # Atomic Commits
@@ -89,7 +89,7 @@ Do not split:
 
 Mid-task you notice something broken: a typo, a latent bug, a missing null
 check unrelated to your work. Whether to fix it in this branch at all is a
-scope decision, and the small-changesets skill owns it: its default is to
+scope decision, and the small-prs skill owns it: its default is to
 park the fix (file an issue, list it as a follow-up) rather than grow the
 branch. When the fix does belong here, because it blocks your change or no
 scope contract is in play, commit it separately, before or after the main

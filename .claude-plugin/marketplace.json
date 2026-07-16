@@ -54,13 +54,13 @@
       "skills": ["./skills/scoped-commits"]
     },
     {
-      "name": "small-changesets",
+      "name": "small-prs",
       "description": "Keep each branch or PR down to one reviewable idea: state a scope contract before coding, park drive-by fixes instead of folding them in, and split big asks into a planned series of self-contained steps, refactor first",
       "source": "./",
       "strict": false,
       "category": "workflow",
       "tags": ["git", "pull-requests", "review", "scope", "workflow"],
-      "skills": ["./skills/small-changesets"]
+      "skills": ["./skills/small-prs"]
     },
     {
       "name": "why-comments",
