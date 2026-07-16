@@ -1,0 +1,41 @@
+{
+  "skill_name": "atomic-commits",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I've been hacking on this repo all afternoon and the working tree is a mess: I added a caching layer to the API client, renamed parseConfig to loadConfig everywhere, and fixed a typo I spotted in the README. Commit my work.",
+      "expected_output": "Three separate commits in a sensible order (typo fix and rename before or apart from the feature), staged with git add -p or per-path adds, not one commit containing everything.",
+      "files": [],
+      "assertions": [
+        "More than one commit is produced",
+        "The README typo fix is its own commit, not bundled with the feature",
+        "The rename is a separate commit from the caching feature",
+        "Commits are ordered so each one builds on its own (mechanical rename not interleaved with behavior changes)",
+        "No commit subject joins unrelated changes with 'and'"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I wrote a new validateEmail function in util/validate.py and its tests in tests/test_validate.py. Should those be two commits, one for the code and one for the tests? Split them up however is best practice and commit.",
+      "expected_output": "One commit containing both the function and its test, with an explanation that a function and its test are one reviewable unit; the agent declines the artificial split.",
+      "files": [],
+      "assertions": [
+        "Exactly one commit is produced for the function plus its test",
+        "The agent explains why splitting code from its test would be artificial",
+        "The commit builds and its tests pass on their own"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "While adding pagination to the /users endpoint I noticed and fixed an off-by-one bug in the existing date formatter. Both changes are sitting uncommitted in the tree, and the bug fix touches the same file as some of my pagination work. Commit everything.",
+      "expected_output": "Two commits: the off-by-one fix separated out (via git add -p if hunks share a file) with its own message describing the bug, and the pagination feature as its own commit.",
+      "files": [],
+      "assertions": [
+        "The discovered bug fix is committed separately from the pagination feature",
+        "Hunk-level staging (git add -p or equivalent) is used where both changes touch the same file",
+        "The bug fix commit message describes the off-by-one, not the pagination work",
+        "Neither commit smuggles unrelated hunks (git diff --cached reviewed or staged diff otherwise verified)"
+      ]
+    }
+  ]
+}
