@@ -14,10 +14,16 @@ import shutil
 import subprocess
 import sys
 from datetime import date
+from fnmatch import fnmatch
 from pathlib import Path
 
 ADR_DIR = "docs/adr"
 TOOL_REPO_PATH = "tools/adr/adr_tools.py"
+# Paths listed here (one glob or path prefix per line, # comments) are
+# skipped by the reference scan and coverage. For prose that must name a
+# superseded ADR (changelogs, postmortems), which would otherwise fail the
+# stale-ref check forever. Never list code here.
+REFIGNORE_PATH = "tools/adr/refignore"
 HOOK_MARKER = "# installed by adr_tools (adr-workflow)"
 
 ADR_FILENAME_RE = re.compile(r"^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
@@ -189,6 +195,20 @@ def is_spec_path(path):
     return path.startswith(ADR_DIR + "/")
 
 
+def load_refignore(root):
+    p = root / REFIGNORE_PATH
+    if not p.is_file():
+        return []
+    return [l.strip() for l in p.read_text(encoding="utf-8").splitlines()
+            if l.strip() and not l.strip().startswith("#")]
+
+
+def ref_ignored(relpath, patterns):
+    return any(fnmatch(relpath, pat)
+               or relpath.startswith(pat.rstrip("/") + "/")
+               for pat in patterns)
+
+
 def scan_text_for_refs(text):
     refs = []
     for i, line in enumerate(text.splitlines(), 1):
@@ -204,6 +224,7 @@ def scan_code_refs(root, adrs):
     """
     by_num = {a.number: a for a in adrs if a.number is not None}
     errors = []
+    ignore = load_refignore(root)
     adr_abs = (root / ADR_DIR).resolve()
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
@@ -213,6 +234,8 @@ def scan_code_refs(root, adrs):
         for fn in filenames:
             fp = Path(dirpath) / fn
             relpath = os.path.relpath(fp, root).replace("\\", "/")
+            if ref_ignored(relpath, ignore):
+                continue
             try:
                 if fp.stat().st_size > 1_000_000:
                     continue
@@ -241,6 +264,47 @@ def check_ref_targets(relpath, refs, by_num):
     return errors
 
 
+def audit_history():
+    """Re-check the hook-enforced commit rules across committed history.
+
+    Hooks are per-clone and easy to skip, so a clone without them can land
+    ungoverned commits that nothing else would ever surface; this audit is
+    what CI runs to backstop them. Audits from the first ADR commit onward,
+    which leaves pre-adoption history in onboarded repos alone.
+    """
+    first = run("git", "log", "--reverse", "--format=%H", "--", ADR_DIR)
+    if not first.stdout.split():
+        return []
+    adoption = first.stdout.split()[0]
+    fmt = "--format=%x1e%H%x1f%B%x1f"
+    out = run("git", "log", "-1", fmt, "--name-only", adoption).stdout
+    out += run("git", "log", "--no-merges", fmt, "--name-only",
+               f"{adoption}..HEAD").stdout
+    errors = []
+    for chunk in out.split("\x1e"):
+        if chunk.count("\x1f") < 2:
+            continue
+        sha, body, files_blob = chunk.split("\x1f", 2)
+        sha = sha.strip()
+        subject = body.strip().splitlines()[0] if body.strip() else ""
+        if subject.startswith(("fixup!", "squash!", "Revert")):
+            continue
+        files = [f for f in files_blob.splitlines() if f.strip()]
+        spec = [f for f in files if is_spec_path(f)]
+        code = [f for f in files if not is_spec_path(f)]
+        if spec and code:
+            errors.append(
+                f"commit {sha[:12]} ({subject[:60]}) mixes spec and code; "
+                "the hooks were bypassed or not installed when it was made")
+        elif code and not (IMPLEMENTS_RE.search(body)
+                           or EXEMPT_RE.search(body)):
+            errors.append(
+                f"commit {sha[:12]} ({subject[:60]}) is a code commit with "
+                "no Implements:/Exempt: trailer; the hooks were bypassed or "
+                "not installed when it was made")
+    return errors
+
+
 def cmd_validate(args):
     root = repo_root()
     adrs = load_adrs_worktree(root)
@@ -248,6 +312,7 @@ def cmd_validate(args):
     warnings = []
 
     if has_head():
+        errors.extend(audit_history())
         # Immutability audit: an ADR file must never be modified or deleted
         # after the commit that introduced it.
         for a in adrs:
@@ -324,8 +389,9 @@ def cmd_check_staged(args):
     by_num = {a.number: a for a in adrs if a.number is not None}
 
     # Staged code must not reference nonexistent or superseded ADRs.
+    ignore = load_refignore(repo_root())
     for status, path in code:
-        if status == "D":
+        if status == "D" or ref_ignored(path, ignore):
             continue
         blob = run("git", "show", f":{path}")
         if blob.returncode != 0:
@@ -362,14 +428,29 @@ def cmd_check_msg(args):
             "behaviour-adjacent files:\n"
             "  Implements: ADR-NNNN[, ADR-NNNN]   (implements specified behaviour)\n"
             "  Exempt: bugfix|refactor|chore|tests (no specified-behaviour change)\n"
-            "bugfix = restoring conformance with a live ADR; refactor = "
-            "behaviour-preserving; chore = tooling/deps/formatting; tests = "
-            "verifying already-specified behaviour.", file=sys.stderr)
+            "bugfix = restoring conformance with a live ADR (cite it in the "
+            "body); refactor = behaviour-preserving; chore = tooling/deps/"
+            "formatting; tests = verifying already-specified behaviour.",
+            file=sys.stderr)
         return 1
+    adrs = load_adrs_index()
+    check_adr_set(adrs)  # populates superseded_by
+    by_num = {a.number: a for a in adrs if a.number is not None}
+    if exempt and exempt.group(1) == "bugfix":
+        # A bugfix claims the code violated some live ADR; requiring the
+        # citation keeps bugfix from being the easy path around the spec
+        # loop. It cannot verify the judgment, only force the claim.
+        cited = [int(n) for n in REF_RE.findall(body)]
+        if not any(by_num.get(n) and by_num[n].superseded_by is None
+                   for n in cited):
+            print(
+                "ERROR: Exempt: bugfix must cite the violated live ADR in "
+                "the message body (the ADR the code is being brought back "
+                "in line with; in an onboarded repo, the baseline ADR). If "
+                "no live ADR is violated, this is not a bugfix — it is a "
+                "spec change, refactor, chore, or tests.", file=sys.stderr)
+            return 1
     if imp:
-        adrs = load_adrs_index()
-        check_adr_set(adrs)  # populates superseded_by
-        by_num = {a.number: a for a in adrs if a.number is not None}
         for num in (int(n) for n in REF_RE.findall(imp.group(1))):
             a = by_num.get(num)
             if a is None:
@@ -565,7 +646,9 @@ All behaviour present in the code at commit {sha} is provisionally accepted.
 For any given behaviour, the code at that commit is its specification until
 a live ADR specifies that behaviour explicitly; from then on the ADR takes
 precedence. New ADRs carve behaviour out of this baseline; they do not carry
-a `Supersedes:` line pointing at it.
+a `Supersedes:` line pointing at it. Until this ADR is superseded, it
+qualifies ADR-0001: the ADR set remains the root authority, but for
+grandfathered behaviour it delegates to the code snapshot named above.
 
 Changing grandfathered behaviour requires an ADR first, like any other spec
 change. Restoring grandfathered code to its evident intent (a crash, an
@@ -660,10 +743,11 @@ def cmd_coverage(args):
     """
     root = repo_root()
     tracked = run("git", "-C", str(root), "ls-files").stdout.splitlines()
+    ignore = load_refignore(root)
     tagged, untagged = [], []
     for relpath in tracked:
-        if is_spec_path(relpath) or any(part in SKIP_DIRS
-                                        for part in relpath.split("/")):
+        if is_spec_path(relpath) or ref_ignored(relpath, ignore) \
+                or any(part in SKIP_DIRS for part in relpath.split("/")):
             continue
         fp = root / relpath
         try:

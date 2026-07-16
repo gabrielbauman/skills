@@ -122,6 +122,13 @@ not deciding anything). Spec wrong or silent → spec change, ADR first. When
 genuinely unsure whether behaviour is specified, treat it as unspecified —
 that errs toward keeping the guarantee.
 
+Reverts follow the same classification. Reverting shipped behaviour is a
+spec change: a new ADR supersedes the regretted one and the code migrates
+back. A bare `git revert` of a code commit (the hooks exempt `Revert`
+subjects) is only for backing out code that never matched the live spec —
+it is a bugfix in revert form. If the revert would change what a live ADR
+specifies, it needs an ADR like any other change.
+
 ### The spec-change loop
 
 1. **Design in conversation.** Work the problem with the user: options,
@@ -175,12 +182,27 @@ cheap.
 | Code | Anything except `docs/adr/` | Trailer: `Implements: ADR-NNNN[, ADR-NNNN]` or `Exempt: bugfix\|refactor\|chore\|tests` |
 
 The hooks enforce: no mixed commits, no ADR mutation, ADR lint on new ADRs,
-no code references to superseded/nonexistent ADRs, and the trailer
-requirement. Never use `git commit --no-verify` on your own initiative; a
+no code references to superseded/nonexistent ADRs, the trailer requirement,
+and a cited live ADR in every `Exempt: bugfix` body (if no live ADR is
+violated, it is not a bugfix). Never use `git commit --no-verify` on your
+own initiative; a
 hook rejection means the change is wrong, not the hook. If the user
 explicitly orders a bypass after you've explained what it breaks, it's their
 repository — comply, tell them the every-behaviour-is-specified guarantee is
-now broken, and offer to backfill the ADR immediately.
+now broken, and offer to backfill the ADR immediately. (A bypassed commit
+also fails `validate`'s history audit permanently — one more reason to
+backfill: the record should at least point at its own gap.)
+
+## Branches and merges
+
+Immutability binds shared history, not unpublished branches. When two
+branches each add an ADR with the same number, `validate` fails the merged
+result on duplicate numbering. The branch that merges second rebases and
+renumbers — file, title, and any code tags — before merging; rewriting an
+unpublished branch is not a mutation of the record. Once a spec commit is on
+the shared branch its number is permanent and every open branch adjusts to
+it. Run `validate` on the merge result before pushing (CI covers this if set
+up as below).
 
 ## When the user wants to skip the process
 
@@ -203,6 +225,21 @@ in the repo:
 | `status` | Table of every ADR: live/superseded-by, code-ref count |
 | `spec` | Render the live spec as one document: every live ADR's Decision section, in number order. A generated view for humans (and agents) — never commit the output; the ADRs are the authority |
 | `coverage` | Report which tracked files carry ADR tags and which remain untagged (grandfathered or non-code). Informational, never an error |
-| `validate` | Full audit: lint, numbering, supersession graph, immutability vs git history, stale/dangling code refs, coverage warnings |
+| `validate` | Full audit: lint, numbering, supersession graph, immutability vs git history, commit-history rules (mixed commits, missing trailers), stale/dangling code refs, coverage warnings |
 | `check-staged` / `check-msg` | The hook entry points (run automatically on commit) |
 | `install-hooks` | (Re)install hooks in an already-governed clone — run this after cloning, since hooks don't travel with the repo |
+
+Hooks are per-clone conveniences, not the enforcement layer: a clone that
+never ran `install-hooks` can commit anything. The backstop is CI — run
+`python3 tools/adr/adr_tools.py validate` on every push and pull request.
+`validate` re-audits the entire post-adoption commit history for mixed
+commits and missing trailers, so an ungoverned commit fails CI before it
+reaches the shared branch. When setting up a governed repo that has a CI
+system, offer to add this check.
+
+Prose that must name a superseded ADR (a changelog, a postmortem) would
+fail the stale-reference scan forever. Either keep such history inside a
+later ADR's Context, or list the file in `tools/adr/refignore` — one glob
+or path prefix per line, committed as a chore — and the reference scan and
+coverage skip it. Code never goes in refignore; a stale tag on code is
+exactly what the scan exists to catch.

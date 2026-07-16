@@ -72,6 +72,10 @@ a whole ADR, and a page can still be atomic.
 - One superseding ADR may supersede several old ones (consolidation), but an
   ADR can only be superseded once — to change a superseded decision again,
   supersede the *live successor*.
+- Removing behaviour is also supersession: write an ADR whose decision is
+  that the behaviour no longer exists, superseding the ADR that specified
+  it. Specified absence is still specification — deleting the code without
+  that ADR would leave a dead decision live in the spec.
 - Never supersede an ADR that is already superseded; the linter rejects it.
 - After the spec commit, `validate` lists every code tag still pointing at
   the superseded ADR. That list is the implementation checklist: migrate the
