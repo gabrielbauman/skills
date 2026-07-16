@@ -1,0 +1,51 @@
+{
+  "skill_name": "humanize",
+  "evals": [
+    {
+      "id": 1,
+      "name": "rewrite-sloppy-announcement",
+      "prompt": "This draft announcement for our internal tool reads like AI slop. Rewrite it so it sounds like a person wrote it, keeping all the actual information:\n\n\"We're thrilled to announce DeployBot — a game-changing addition to our robust deployment ecosystem. It's not just a script runner — it's a fundamental reimagining of how teams ship. Here's the kicker: setup takes five minutes. Not hours. Not days. Five minutes.\n\n- **Seamless Integration**: Works with our existing CI pipeline out of the box\n- **Robust Rollbacks**: One-click rollbacks that leverage snapshot technology\n- **Crucial Observability**: Real-time dashboards highlighting deployment health\n\nExperts agree that deployment friction quietly kills team velocity. DeployBot represents a pivotal shift in our engineering culture — from manual toil to seamless automation. In conclusion, we believe this will fundamentally reshape how we think about shipping code.\"",
+      "expected_output": "A shorter rewrite preserving the facts (DeployBot, five-minute setup, CI integration, snapshot rollbacks, dashboards) with the tropes removed: no em-dash chains, no negative parallelism, no denial countdown, no bold-first bullets, no unnamed experts, no 'In conclusion', no inflated vocabulary.",
+      "files": [],
+      "assertions": [
+        "All factual content is preserved (name, 5-minute setup, CI integration, snapshot rollbacks, dashboards)",
+        "At most 2 em dashes in the rewrite",
+        "No negative parallelism ('it's not X, it's Y') or denial countdowns ('Not hours. Not days.')",
+        "No bold-first bullet labels",
+        "Banned vocabulary removed: game-changing, robust, seamless, crucial, pivotal, leverage, fundamentally",
+        "No unnamed authorities ('experts agree') and no signposted conclusion ('In conclusion')",
+        "The rewrite is shorter than the original"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "draft-release-notes-post",
+      "prompt": "Write a short blog post (about 300 words) for our engineering blog announcing that our CLI's v3 release cut cold-start time from 1.8s to 90ms by lazy-loading plugins, and that this breaks plugins built against the v2 eager-load API (migration guide at docs/migration-v3.md). Audience is developers who use the CLI.",
+      "expected_output": "A plain, specific post that leads with the change, gives the real numbers, states the breakage honestly without a compliment sandwich, and points to the migration guide, free of AI tropes.",
+      "files": [],
+      "assertions": [
+        "Contains the concrete numbers (1.8s, 90ms) and the migration guide path",
+        "The breaking change is stated plainly, not buried or wrapped in 'despite these challenges' framing",
+        "At most 2 em dashes and no unicode arrows or emoji",
+        "No banned vocabulary (delve, robust, seamless, leverage, game-changer, crucial, pivotal)",
+        "No 'Here's the kicker/thing', 'Let's dive in', 'It's worth noting', or 'In conclusion'",
+        "No negative parallelism and no bold-first bullet lists",
+        "Sentence lengths vary; no run of one-fragment paragraphs for emphasis"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "pr-description-technical",
+      "prompt": "Write the PR description for this change: we moved session token validation from each request handler into a middleware, because three handlers validated differently and one (the websocket upgrade path) skipped expiry checks entirely, which let expired tokens open sockets. The middleware now rejects expired tokens everywhere. Include a note for reviewers about what to focus on.",
+      "expected_output": "A precise PR description naming the actual mechanism (websocket upgrade path skipped expiry checks) without performative engineering slang or fallback diagnoses.",
+      "files": [],
+      "assertions": [
+        "Names the specific defect (websocket upgrade path skipped expiry checks) rather than a generic label",
+        "No performative slang: footgun, blast radius, 'when this lands', smoke test, 'under the hood'",
+        "No fallback diagnosis words (race condition, memory leak) since none applies",
+        "No bold-first bullets and at most 2 em dashes",
+        "Reviewer note is specific about what to check, not 'please take an in-depth look'"
+      ]
+    }
+  ]
+}
