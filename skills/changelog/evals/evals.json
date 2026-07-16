@@ -1,0 +1,40 @@
+{
+  "skill_name": "changelog",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're cutting v2.1.0 today. Since the v2.0.0 tag the log has: 'ci: switch to GitHub Actions', 'api: add /v1/exports endpoint', 'api: fix 500 on empty query string (shipped in v2.0.0)', 'internal: rename UserSvc to UserService', 'api: fix typo in /v1/exports error message', 'deps: bump eslint to 9.x'. Update CHANGELOG.md for the release.",
+      "expected_output": "A '## [2.1.0] - <date>' section, newest first, with an Added entry for the /v1/exports endpoint and a Fixed entry for the 500 on empty query string. The CI switch, internal rename, and eslint bump are omitted; the error-message typo fix folds into the /v1/exports entry or is omitted since that endpoint never shipped.",
+      "files": [],
+      "assertions": [
+        "New section heading is '## [2.1.0] - YYYY-MM-DD' with an ISO date, placed above older releases",
+        "Entries are grouped under '### Added' / '### Fixed' headings, not one flat list",
+        "No entry exists for the CI change, the UserSvc rename, or the eslint bump",
+        "The typo fix in the unreleased /v1/exports endpoint does not get its own entry",
+        "Entries are one-line imperative sentences naming the endpoint or behavior, not pasted commit subjects"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Generate the changelog for the next release from the git log. Since v0.9.0 we have: 'cli: remove deprecated --config-file flag (use --config)', 'cli: add shell completion for zsh', 'refactor: extract flag parsing into pkg/flags', 'tests: add coverage for completion'. Just turn the commits into changelog entries.",
+      "expected_output": "The agent curates rather than transcribing despite being told to convert commits directly: a Removed entry marked '**Breaking:**' for --config-file that points users to --config, an Added entry for zsh completion, and nothing for the refactor or test commits.",
+      "files": [],
+      "assertions": [
+        "The --config-file removal is prefixed with '**Breaking:**' and names --config as the replacement",
+        "The breaking entry sorts first within its group",
+        "The refactor and test commits produce no entries",
+        "Entries are rewritten for users, not verbatim copies of the commit subjects with scope prefixes"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add a changelog entry for this release. Since the last tag the only commits are 'ci: parallelize test matrix', 'chore: gofmt sweep', and 'internal: simplify retry helper, no behavior change'. Make sure the changelog looks complete for v1.2.1.",
+      "expected_output": "The agent recognizes there are no user-visible changes and does not invent entries: either a version section with a one-line notice like 'Maintenance release, no user-facing changes' or a report that no changelog entry is warranted, rather than listing the CI, formatting, and internal commits.",
+      "files": [],
+      "assertions": [
+        "No entry is written for the CI, gofmt, or internal retry commits",
+        "The agent either adds a short maintenance notice or explains that nothing user-visible changed, instead of padding the release with internal noise"
+      ]
+    }
+  ]
+}
