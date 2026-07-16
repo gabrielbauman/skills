@@ -102,6 +102,10 @@ message) may keep their default format — don't force a scope onto them.
   what.
 - Inventing a new scope when `git log -- <changed-path>` shows an established one.
 
+When rewriting an existing vague message (e.g. `fix: bug`), don't invent
+specifics — recover them from the change itself (`git show <sha>` or the diff at
+hand), and if the change isn't available, ask what it did rather than guess.
+
 ## Examples
 
 **Change**: added retry logic to the S3 upload client in `internal/storage/`
