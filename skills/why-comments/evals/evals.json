@@ -1,0 +1,45 @@
+{
+  "skill_name": "why-comments",
+  "evals": [
+    {
+      "id": 1,
+      "name": "strip-noise-keep-constraints",
+      "prompt": "Clean up the comments in this file. Don't change any behaviour:\n\n```python\nimport time\n\n# ---- helpers ----\n\n# Function to fetch a user by id\ndef fetch_user(user_id):\n    # Build the URL\n    url = f\"https://api.example.com/users/{user_id}\"\n    # The API returns created_at in milliseconds, not seconds like the\n    # rest of our codebase assumes; convert before returning.\n    raw = http_get(url)\n    # Convert the timestamp\n    raw[\"created_at\"] = raw[\"created_at\"] / 1000\n    # Return the user\n    return raw\n\n# Retry loop\ndef fetch_with_retry(user_id):\n    # Loop 5 times\n    for attempt in range(5):\n        try:\n            # Try to fetch\n            return fetch_user(user_id)\n        except TransientError:\n            # Sleep with exponential backoff\n            time.sleep(2 ** attempt)\n    raise\n```",
+      "expected_output": "The narration comments (Build the URL, Convert the timestamp, Return the user, Loop 5 times, Try to fetch, section banner, name-restating dockind comments) are deleted; the milliseconds-vs-seconds constraint comment is kept; behaviour is unchanged.",
+      "files": [],
+      "assertions": [
+        "The milliseconds-to-seconds constraint comment is preserved (possibly reworded, meaning intact)",
+        "Narration comments are gone: 'Build the URL', 'Convert the timestamp', 'Return the user', 'Loop 5 times', 'Try to fetch'",
+        "The '---- helpers ----' section banner is gone",
+        "'Function to fetch a user by id' and 'Retry loop' name-restating comments are gone",
+        "No code behaviour changed"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "write-code-sparse-comments",
+      "prompt": "Write a Python function parse_duration(s) that parses strings like '90s', '5m', '2h' into seconds (int). Bare numbers ('90') are treated as seconds for backward compatibility with our v1 config format, which didn't have unit suffixes. Reject negative values because the scheduler treats negative durations as 'run immediately' and that caused incident #217.",
+      "expected_output": "A working function with at most two or three comments: the v1 backward-compatibility reason and the incident #217 reason for rejecting negatives. No comment narrates parsing steps.",
+      "files": [],
+      "assertions": [
+        "The bare-number branch carries the v1 config backward-compatibility reason (in a comment or docstring)",
+        "The negative-value rejection carries the incident/scheduler reason",
+        "No comment narrates what the next line does (e.g. '# strip the suffix', '# convert to int')",
+        "No section banner comments",
+        "The docstring, if present, states the contract (input format, return unit, errors) rather than implementation steps"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "no-reviewer-comments-in-fix",
+      "prompt": "There's a bug in this function: it compares prices as floats, so 0.1 + 0.2 style errors make equal carts look different. Fix it by comparing cents as integers.\n\n```python\ndef carts_equal(a, b):\n    return sum(item.price for item in a) == sum(item.price for item in b)\n```",
+      "expected_output": "A fix that compares integer cents, with either no comment or a single why-comment about float comparison; no comment addressed to the reviewer about the change itself.",
+      "files": [],
+      "assertions": [
+        "No reviewer-directed comments: nothing like 'fixed the bug', 'changed to use cents', 'per feedback', 'new implementation', 'this is now correct'",
+        "If a comment exists, it states the reason (float equality is unreliable for money) rather than describing the edit",
+        "The fix compares integer cents"
+      ]
+    }
+  ]
+}
