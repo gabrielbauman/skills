@@ -31,8 +31,16 @@ cp -r skills/skills/scoped-commits ~/.claude/skills/
 # or, per-project: cp -r skills/skills/scoped-commits .claude/skills/
 ```
 
-**Other agents** — any agent that supports the [Agent Skills
-format](https://agentskills.io) can use a `skills/<name>/` directory as-is.
+**Codex, Cursor, Gemini CLI, and other agents** — install with the
+[skills.sh](https://skills.sh) CLI, which places skills in the right directory
+for whichever agent it detects:
+
+```sh
+npx skills add gabrielbauman/skills
+```
+
+Or copy a `skills/<name>/` directory anywhere the [Agent Skills
+format](https://agentskills.io) is supported.
 
 ## Repository layout
 

@@ -18,6 +18,10 @@ dashes, no filler, bodies as short why-focused paragraphs.
 1. Put the skill at `skills/<name>/SKILL.md`. The frontmatter `name` must
    match the directory name. Add `references/`, `scripts/`, and
    `evals/evals.json` as needed.
+   Frontmatter must be strict YAML: double-quote the `description` value,
+   since useful descriptions usually contain a colon and space, which breaks
+   plain scalars. Claude Code parses them anyway; the skills.sh CLI silently
+   drops the skill.
 2. Add a plugin entry to `.claude-plugin/marketplace.json` following the
    existing pattern: `source: "./"`, `strict: false`, and a `skills` array
    pointing at `./skills/<name>`.
