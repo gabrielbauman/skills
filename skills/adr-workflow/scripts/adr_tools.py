@@ -69,6 +69,8 @@ class Adr:
     def __init__(self, name):
         self.name = name              # filename, e.g. 0007-token-refresh.md
         self.number = None            # int
+        self.title = None             # from the H1, without the ADR-NNNN prefix
+        self.text = ""                # full file content
         self.supersedes = []          # list of ints
         self.problems = []            # lint problems (strings)
         self.superseded_by = None     # int, computed across the set
@@ -91,12 +93,14 @@ def parse_adr(name, text):
         return adr
     adr.number = int(m.group(1))
 
+    adr.text = text
     lines = [l for l in text.splitlines() if l.strip()]
     if not lines or not TITLE_RE.match(lines[0]):
         adr.problems.append("first line must be `# ADR-NNNN: Title`")
     else:
         if int(TITLE_RE.match(lines[0]).group(1)) != adr.number:
             adr.problems.append("title number does not match filename number")
+        adr.title = lines[0].split(": ", 1)[1].strip()
     if not DATE_RE.search(text):
         adr.problems.append("missing `- Date: YYYY-MM-DD` line")
     if STATUS_LINE_RE.search(text):
@@ -398,6 +402,41 @@ def cmd_status(args):
     return 0
 
 
+def decision_section(text):
+    m = re.search(r"^## Decision\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if not m:
+        return ""
+    # Template scaffolding (the restatement reminder) is not spec content.
+    return re.sub(r"<!--.*?-->", "", m.group(1), flags=re.S).strip()
+
+
+def cmd_spec(args):
+    """Render the live spec as one document, on demand.
+
+    A committed summary would be a second spec that can drift; a view
+    generated from the live set cannot. Supersession-with-restatement is
+    what makes concatenation sufficient: every live Decision section is
+    complete on its own.
+    """
+    root = repo_root()
+    adrs = load_adrs_worktree(root)
+    errors = check_adr_set(adrs)
+    live = sorted((a for a in adrs if a.number is not None
+                   and a.superseded_by is None), key=lambda a: a.number)
+    print("# Live specification\n")
+    print(f"The Decision section of every live ADR ({len(live)} live of "
+          f"{len(adrs)} total), in number order. Generated view; the files "
+          f"in {ADR_DIR}/ are the authority. Do not commit this output.")
+    for a in live:
+        print(f"\n## {a.id}: {a.title or a.name}\n")
+        print(decision_section(a.text) or "(empty Decision section)")
+    if errors:
+        print(f"\n{len(errors)} consistency error(s); run `validate` for "
+              "details", file=sys.stderr)
+        return 1
+    return 0
+
+
 def slugify(title):
     slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
     return slug or "untitled"
@@ -543,13 +582,15 @@ def main():
     p.add_argument("--supersedes", help="comma-separated ADR numbers")
     sub.add_parser("validate")
     sub.add_parser("status")
+    sub.add_parser("spec")
     sub.add_parser("check-staged")
     sub.add_parser("check-msg").add_argument("msgfile")
     sub.add_parser("install-hooks")
     args = ap.parse_args()
     fn = {"init": cmd_init, "new": cmd_new, "validate": cmd_validate,
-          "status": cmd_status, "check-staged": cmd_check_staged,
-          "check-msg": cmd_check_msg, "install-hooks": cmd_install_hooks}[args.cmd]
+          "status": cmd_status, "spec": cmd_spec,
+          "check-staged": cmd_check_staged, "check-msg": cmd_check_msg,
+          "install-hooks": cmd_install_hooks}[args.cmd]
     sys.exit(fn(args))
 
 

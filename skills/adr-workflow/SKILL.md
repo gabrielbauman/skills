@@ -14,7 +14,9 @@ never-rewritten record.** Everything below exists to keep that guarantee.
 - **ADRs are the spec.** Files under `docs/adr/`, named `NNNN-slug.md`. The
   live specification is the set of ADRs no other ADR supersedes. There is no
   separate docs layer — a hand-maintained "current docs" file would be a
-  second spec that can drift; the ADR set can't.
+  second spec that can drift; the ADR set can't. When someone wants the
+  whole live spec in one readable document, generate it on demand with
+  `adr_tools.py spec` — never commit the output, for the same reason.
 - **ADRs are atomic and immutable.** One independently supersedable decision
   per ADR. A committed ADR is never edited or deleted, only superseded by a
   later ADR whose `Supersedes:` line points back at it. Status ("live" vs
@@ -155,6 +157,7 @@ in the repo:
 | `init` | Scaffold `docs/adr/` + ADR-0001, copy tooling, install hooks (greenfield only; `--force` overrides) |
 | `new "Title" [--supersedes 7]` | Create the next-numbered ADR from the template |
 | `status` | Table of every ADR: live/superseded-by, code-ref count |
+| `spec` | Render the live spec as one document: every live ADR's Decision section, in number order. A generated view for humans (and agents) — never commit the output; the ADRs are the authority |
 | `validate` | Full audit: lint, numbering, supersession graph, immutability vs git history, stale/dangling code refs, coverage warnings |
 | `check-staged` / `check-msg` | The hook entry points (run automatically on commit) |
 | `install-hooks` | (Re)install hooks in an already-governed clone — run this after cloning, since hooks don't travel with the repo |
