@@ -1,12 +1,12 @@
 ---
 name: scoped-commits
-description: Write git commit messages in the Scoped Commits style (scopedcommits.com), where the subject line is "scope: description" — the affected subsystem first, then a short summary — as used by Linux, Go, Git, FreeBSD, and nixpkgs. Use this skill every time you are about to commit when any of these hold: (1) the repository's existing log already uses scope-first subjects like "net/http: fix cookie parsing", (2) you are making the first commit in a brand-new repository, or (3) the project's AGENTS.md, CLAUDE.md, or CONTRIBUTING file says to use scoped commits. Also use it when asked to write, rewrite, or review commit messages in this style. Do not use Conventional Commits prefixes (feat:, fix:, chore:) in these repositories.
+description: Write git commit messages in the Scoped Commits style (scopedcommits.com), where the subject line is "scope: description" (the affected subsystem first, then a short summary), as used by Linux, Go, Git, FreeBSD, and nixpkgs. Includes a default house style for the message text itself: concise, precise, plain ASCII, no emoji, no filler. Use this skill every time you are about to commit when any of these hold: (1) the repository's existing log already uses scope-first subjects like "net/http: fix cookie parsing", (2) you are making the first commit in a brand-new repository, or (3) the project's AGENTS.md, CLAUDE.md, or CONTRIBUTING file says to use scoped commits. Also use it when asked to write, rewrite, or review commit messages in this style. Do not use Conventional Commits prefixes (feat:, fix:, chore:) in these repositories.
 ---
 
 # Scoped Commits
 
 Scoped Commits is a commit message convention where the subject line leads with the
-**scope** — the subsystem, area, or module the commit touches — instead of a change
+**scope** (the subsystem, area, or module the commit touches) instead of a change
 type. It is the style used by Linux, FreeBSD, Git, Go, and nixpkgs.
 
 ```
@@ -40,13 +40,13 @@ Before committing, check in this order:
 1. **Project docs**: if AGENTS.md, CLAUDE.md, or CONTRIBUTING mentions scoped
    commits (or shows `scope: description` examples), follow it.
 2. **Existing history**: run `git log --oneline -20`. If subjects follow
-   `scope: description` (and are not Conventional Commits types), match them —
-   reuse the same scope names, capitalization, and tense you observe.
+   `scope: description` (and are not Conventional Commits types), match them.
+   Reuse the same scope names, capitalization, and tense you observe.
 3. **New repository**: if there is no history yet (first commit), adopt scoped
    commits from the start.
 
 If the history clearly follows some other convention (e.g. Conventional Commits),
-follow the project's convention instead — consistency within a repo beats any
+follow the project's convention instead; consistency within a repo beats any
 global style.
 
 ## Choosing the scope
@@ -67,9 +67,9 @@ code, not from a fixed list:
 
 ## Writing the description
 
-The standard itself leaves capitalization, tense, and length to each project — so
-match the existing log first. When there is no precedent, use the widely shared
-default (Linux/Go house style):
+The Scoped Commits standard leaves capitalization, tense, and length to each
+project, so structural conventions in the existing log win. Absent precedent, use
+the Linux/Go default:
 
 - Imperative mood, completing the sentence "this change modifies the project to
   _______": `add`, `fix`, `remove`, not `added` or `adds`.
@@ -82,28 +82,67 @@ default (Linux/Go house style):
 ## Body and trailers
 
 - Add a body when the subject alone can't explain *why* the change is needed or
-  *how* it works. Separate it from the subject with a blank line; wrap at ~72
-  characters; plain text, no Markdown headings.
+  *how* it works. Separate it from the subject with a blank line and wrap at
+  ~72 characters.
 - Put metadata in trailers at the end: `Fixes: #123`, `Jira-Ticket: PROJ-123`,
   `Co-Authored-By: ...`. A ticket can alternatively go in parentheses after the
   scope: `auth (PROJ-123): fix token refresh`.
 
+## House style for the message text
+
+These defaults govern the prose of the whole message. Written project rules
+override them; a merely inconsistent log does not. The goal is text that reads
+like a careful human wrote it in a terminal, because that is where it will be
+read.
+
+**Plain text only.** `git log` renders raw text, so use ASCII punctuation and no
+markup: no emoji, no em or en dashes (use a comma, colon, parentheses, or two
+sentences), no smart quotes, no arrows or decorative Unicode, no Markdown bold,
+headings, or code fences. Refer to identifiers by their bare names.
+
+**Concise.** Get to the point in the first clause. Never open with filler like
+"This commit...", "This change...", or "In order to"; the reader already knows
+they are looking at a commit. Cut anything that repeats the subject line.
+
+**Precise.** Name the function, flag, file, or error verbatim and give real
+numbers. "cut startup from 4s to 300ms by caching the schema" beats
+"significantly improve performance". If you can't be specific, you probably
+haven't understood the change; go read the diff again.
+
+**No inflated language.** Words like comprehensive, robust, seamless, enhance,
+leverage, streamline, and crucial claim quality instead of describing the
+change. So do vague subjects like "various improvements" or "minor tweaks".
+State what changed and let the reader judge.
+
+**Prose bodies, not diff narration.** Write the body as short paragraphs
+explaining why the change is needed and what the diff can't show (constraints,
+rejected alternatives, follow-up needed). Do not restate the diff as a bullet
+list of "Added X / Updated Y / Removed Z"; anyone can get that from the diff
+itself. A plain `-` list is fine only for genuinely parallel items, like four
+renamed flags.
+
+**No rhetorical dressing.** No negative parallelism ("this isn't just a fix,
+it's a redesign"), no rhetorical questions, no "Key changes:" section headers,
+no summaries of the summary.
+
 ## Special commits
 
 Reverts, merges, and other machinery commits (e.g. `git revert`'s generated
-message) may keep their default format — don't force a scope onto them.
+message) may keep their default format; don't force a scope onto them.
 
 ## Anti-patterns
 
-- `feat(auth): add login` — Conventional Commits type-first format. Drop the type;
-  write `auth: add login`.
-- `fix: various fixes` — no scope, vague description.
-- `Update code` / `WIP` / `address review comments` — says nothing about where or
+- `feat(auth): add login` is the Conventional Commits type-first format. Drop the
+  type; write `auth: add login`.
+- `fix: various fixes` has no scope and a vague description.
+- `Update code` / `WIP` / `address review comments` say nothing about where or
   what.
+- `auth: enhance login robustness ✨` breaks the house style three ways: filler
+  verb, quality claim, emoji.
 - Inventing a new scope when `git log -- <changed-path>` shows an established one.
 
 When rewriting an existing vague message (e.g. `fix: bug`), don't invent
-specifics — recover them from the change itself (`git show <sha>` or the diff at
+specifics. Recover them from the change itself (`git show <sha>` or the diff at
 hand), and if the change isn't available, ask what it did rather than guess.
 
 ## Examples
@@ -120,8 +159,31 @@ hand), and if the change isn't available, ask what it did rather than guess.
 config: don't crash on empty include list
 
 parseIncludes assumed at least one entry and indexed [0]
-unconditionally. An empty `includes:` key in YAML produces a nil
+unconditionally. An empty "includes:" key in YAML produces a nil
 slice, so loading such a config crashed on startup.
 
 Fixes: #482
+```
+
+**Body style, bad then good**, for a change that moves rate limiting into
+middleware:
+
+```
+api: enhance rate limiting ✨
+
+This commit comprehensively improves our rate limiting:
+- Added a new middleware
+- Updated the handlers to use it
+- Removed the old per-handler checks
+
+Key benefit: more robust and seamless request handling!
+```
+
+```
+api: move rate limiting into shared middleware
+
+Each handler previously ran its own limiter, so limits drifted as
+handlers were added (search had none at all). One middleware in
+front of the mux applies the same 100 req/min policy everywhere and
+drops the six per-handler copies.
 ```
