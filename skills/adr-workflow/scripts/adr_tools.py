@@ -209,6 +209,24 @@ def ref_ignored(relpath, patterns):
                for pat in patterns)
 
 
+TEST_DIRS = {"test", "tests", "spec", "specs", "__tests__"}
+
+
+def is_test_path(relpath):
+    """Heuristic over common test layouts and naming conventions.
+
+    Only feeds the informational test-coverage report in `coverage`, so a
+    miss under-reports there and nothing else.
+    """
+    parts = relpath.split("/")
+    if any(p.lower() in TEST_DIRS for p in parts[:-1]):
+        return True
+    name = parts[-1]
+    stem = name.split(".", 1)[0]
+    return (stem.startswith("test_") or stem.endswith(("_test", "Test", "_spec"))
+            or ".test." in name or ".spec." in name)
+
+
 def scan_text_for_refs(text):
     refs = []
     for i, line in enumerate(text.splitlines(), 1):
@@ -600,8 +618,9 @@ Adopt the ADR-driven workflow for this repository:
 4. An ADR's status is computed from supersession references, never written
    into the file.
 5. Code implementing a decision carries an inline `ADR-NNNN` tag in a comment
-   at the implementing unit. Comments explain why behaviour exists (including
-   the ADR reference), never what the code does.
+   at the implementing unit, and a test verifying a decision carries the same
+   tag. Comments explain why behaviour exists (including the ADR reference),
+   never what the code does.
 6. No code may implement behaviour that no live ADR specifies.
 7. Every commit is either a spec commit (touching only `docs/adr/`) or a code
    commit (touching nothing in `docs/adr/`), never both. Spec commits land
@@ -734,17 +753,20 @@ next steps (two commits, in this order):
 
 
 def cmd_coverage(args):
-    """Report which tracked files carry ADR tags.
+    """Report which tracked files carry ADR tags, and which live ADRs
+    have no tagged test.
 
     Informational only, never an error: in an onboarded repo, untagged
     files are usually grandfathered under the baseline ADR, and a failing
     ratchet would just be the rejected specify-everything-up-front plan
-    in disguise.
+    in disguise. Same for tests: some decisions are unobservable, and a
+    hard test-per-ADR rule would only breed tautology tests.
     """
     root = repo_root()
     tracked = run("git", "-C", str(root), "ls-files").stdout.splitlines()
     ignore = load_refignore(root)
     tagged, untagged = [], []
+    test_tagged = set()  # ADR numbers referenced from test files
     for relpath in tracked:
         if is_spec_path(relpath) or ref_ignored(relpath, ignore) \
                 or any(part in SKIP_DIRS for part in relpath.split("/")):
@@ -756,7 +778,10 @@ def cmd_coverage(args):
             text = fp.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             continue
-        (tagged if REF_RE.search(text) else untagged).append(relpath)
+        refs = REF_RE.findall(text)
+        (tagged if refs else untagged).append(relpath)
+        if refs and is_test_path(relpath):
+            test_tagged.update(int(n) for n in refs)
     total = len(tagged) + len(untagged)
     if not total:
         print("no scannable tracked files")
@@ -766,6 +791,20 @@ def cmd_coverage(args):
         print("\nuntagged (grandfathered under the baseline ADR, or non-code):")
         for p in untagged:
             print(f"  {p}")
+
+    adrs = load_adrs_worktree(root)
+    check_adr_set(adrs)  # populates superseded_by
+    live = sorted((a for a in adrs if a.number is not None
+                   and a.superseded_by is None), key=lambda a: a.number)
+    if live:
+        untested = [a for a in live if a.number not in test_tagged]
+        print(f"\n{len(live) - len(untested)} of {len(live)} live ADRs have "
+              "a tagged test")
+        if untested:
+            print("no tagged test (fine for unobservable decisions — process, "
+                  "tooling, structure):")
+            for a in untested:
+                print(f"  {a.id}  {a.name[5:-3].replace('-', ' ')}")
     return 0
 
 
