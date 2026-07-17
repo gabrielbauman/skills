@@ -122,6 +122,10 @@ not deciding anything). Spec wrong or silent → spec change, ADR first. When
 genuinely unsure whether behaviour is specified, treat it as unspecified —
 that errs toward keeping the guarantee.
 
+A bugfix also exposes a gap in the executable spec: code violated a live ADR
+and no test caught it. Add or extend a test tagged with that ADR as part of
+the fix, so the same violation fails in CI next time.
+
 Reverts follow the same classification. Reverting shipped behaviour is a
 spec change: a new ADR supersedes the regretted one and the code migrates
 back. A bare `git revert` of a code commit (the hooks exempt `Revert`
@@ -145,8 +149,13 @@ specifies, it needs an ADR like any other change.
    the old file is untouched — the new ADR's `Supersedes:` line is the only
    record needed.
 5. **Implement.** Bring the code into line with the new live spec — no more,
-   no less. Tag implementing units with the ADR id. If you superseded an ADR,
-   `validate` will list every stale `ADR-NNNN` tag pointing at it; that list
+   no less. Tag implementing units with the ADR id. When the Decision
+   specifies observable behaviour, also write a test asserting it, tagged
+   with the same id — the test is the Decision's conformance check made
+   executable, and it lands in the same code commit. A decision with nothing
+   observable (a process rule, a structural choice) gets no test; never
+   write a tautology to fill the gap. If you superseded an ADR, `validate`
+   will list every stale `ADR-NNNN` tag pointing at it; that list
    is your migration checklist.
 6. **Code commit** with `Implements: ADR-NNNN`, then run
    `python3 tools/adr/adr_tools.py validate` and fix anything it reports.
@@ -171,6 +180,10 @@ cheap.
   ```
 
   Not: `# print greeting (ADR-0002)`.
+- Tests that verify an ADR's decision carry the same `ADR-NNNN` tag as the
+  implementing code. The payoff comes at supersession: the stale-tag scan
+  then lists those tests alongside the code, so a test asserting dead spec
+  gets migrated instead of silently pinning the old behaviour.
 - Never write code referencing an ADR that doesn't exist yet ("I'll commit the
   spec later") — spec lands first, and the hooks reject the reversed order.
 
@@ -224,7 +237,7 @@ in the repo:
 | `new "Title" [--supersedes 7]` | Create the next-numbered ADR from the template |
 | `status` | Table of every ADR: live/superseded-by, code-ref count |
 | `spec` | Render the live spec as one document: every live ADR's Decision section, in number order. A generated view for humans (and agents) — never commit the output; the ADRs are the authority |
-| `coverage` | Report which tracked files carry ADR tags and which remain untagged (grandfathered or non-code). Informational, never an error |
+| `coverage` | Report which tracked files carry ADR tags and which remain untagged (grandfathered or non-code), plus which live ADRs have no tagged test. Informational, never an error — some decisions are untestable, and a hard test ratchet would only breed tautology tests |
 | `validate` | Full audit: lint, numbering, supersession graph, immutability vs git history, commit-history rules (mixed commits, missing trailers), stale/dangling code refs, coverage warnings |
 | `check-staged` / `check-msg` | The hook entry points (run automatically on commit) |
 | `install-hooks` | (Re)install hooks in an already-governed clone — run this after cloning, since hooks don't travel with the repo |

@@ -35,6 +35,28 @@ three sections, and **no Status line** — a written status would have to be
 edited when superseded, violating immutability, so status is always computed
 from `Supersedes:` references instead.
 
+## Decisions and tests
+
+A Decision written checkably usually admits a test: the ADR says the CLI
+prints exactly `Hello, NAME!`, a test tagged `ADR-NNNN` asserts it. That
+tagged test is the Decision's conformance check made executable — write one
+whenever the Decision specifies observable behaviour, in the code commit
+that implements it.
+
+If you cannot imagine a test while drafting, work out which case you are in:
+
+- **The decision is real but unobservable** — a dependency choice, a process
+  rule, a structural convention. Fine; it simply has no test, and
+  `coverage` reporting it untested is expected, not a problem to fix.
+- **The Decision is written too vaguely to check** — "the CLI greets the
+  user". Rewrite it until conformance is checkable; the missing test was a
+  symptom.
+
+Never write a test that merely restates code structure so an ADR looks
+covered. A tautological test is a false conformance claim, the same failure
+as an invented rationale: it makes the record claim knowledge it doesn't
+have. There is no test-per-ADR rule for exactly this reason.
+
 ## Atomicity
 
 One ADR = one independently supersedable decision. The test while drafting:
