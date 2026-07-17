@@ -141,8 +141,15 @@ specifies, it needs an ADR like any other change.
 2. **Draft the ADR(s).** `python3 tools/adr/adr_tools.py new "Title"
    [--supersedes N]` scaffolds the next number. One decision per ADR — the
    test is *"would anyone ever want to replace only part of this?"* If yes,
-   split it. See [references/adr-authoring.md](references/adr-authoring.md)
-   for the template, atomicity examples, and supersession mechanics.
+   split it. Write the ADR to stand on the repository alone: it may cite other
+   ADRs, tracked files, and committed history, and nothing else — never this
+   conversation, never local environment state (a working-tree-only file, an
+   unmerged branch, terminal output, a home-directory path). Rewrite any such
+   reference into the durable fact behind it. If a `humanize` skill is
+   available, invoke it while drafting so the record reads like a person wrote
+   it. See [references/adr-authoring.md](references/adr-authoring.md) for the
+   template, the self-containment and prose rules, atomicity examples, and
+   supersession mechanics.
 3. **Get explicit approval.** Show the user the full ADR text. Once committed
    it is permanent, so approval happens now, not after.
 4. **Spec commit.** Only `docs/adr/` files. If the change supersedes an ADR,

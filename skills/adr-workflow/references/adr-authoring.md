@@ -3,6 +3,43 @@
 Read this before drafting an ADR. The format rules are enforced by the
 tooling; the judgment rules here are what make the ADR set worth reading.
 
+## Self-contained to the repository
+
+An ADR must be legible from the repository alone. Its only audience is a
+future reader who has the repo and nothing else — not this conversation, not
+your shell, not the machine you drafted it on. So an ADR may refer only to
+things that live in the repository: other ADRs, tracked files, committed
+history. It must never refer to anything outside it.
+
+Concretely, never write:
+
+- **Conversation context** — "as we discussed", "per your request", "the
+  approach you preferred". The reader wasn't in the conversation; the ADR has
+  to make the case on its own.
+- **Local environment state** — a path under someone's home directory, a
+  branch that isn't merged, output you saw in your terminal, a file that
+  exists only in the working tree, "the currently running instance". None of
+  it survives for the next reader.
+- **Anything transient or external without pinning it** — if a decision turns
+  on an external fact (a library's behaviour, a standard, a benchmark),
+  restate the fact in the ADR rather than pointing at where you saw it. A
+  bare URL or ticket link rots; the reasoning it carried should live in the
+  Context.
+
+Rewrite every such reference into the durable fact behind it. "We chose JSON
+because you said the consumer is a browser" becomes "The consumer is a
+browser extension, which parses JSON natively; hence JSON." When you cannot
+state the fact from the repository, that gap is real — resolve it with the
+user before committing, don't paper over it with a pointer nobody can follow.
+
+## Prose style
+
+ADRs are prose a human will read, so write them like a human did. If a
+`humanize` skill is available, invoke it while drafting or revising an ADR
+and apply its checklist — no AI tropes, no inflated vocabulary, specifics
+over adjectives, no em-dash-and-reframe filler. A permanent record written in
+slop is a permanent liability.
+
 ## Template
 
 ```markdown
