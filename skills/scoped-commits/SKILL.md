@@ -125,6 +125,23 @@ renamed flags.
 it's a redesign"), no rhetorical questions, no "Key changes:" section headers,
 no summaries of the summary.
 
+**Self-contained to the repository.** The message is read from `git log` by
+someone who has the repo and nothing else: not this conversation, not your
+shell, not the machine you committed from. Refer only to what lives in the
+repo (files, symbols, other commits, tracked history). Never reference chat
+context ("as you asked", "the approach we settled on", "the error you
+pasted") or local environment state (a path under your home directory, an
+unmerged branch, terminal output, "the server I had running", a failing test
+that only exists in your working tree). Rewrite any such reference into the
+durable fact behind it: "fix the crash you saw" becomes "fix nil deref when
+config lacks an includes key". If the fact can't be stated from the repo and
+the diff, you don't understand the change yet.
+
+**Human, not slop.** If a `humanize` skill is available, invoke it when
+writing a body and apply its checklist; the house-style rules above are the
+same tells it hunts for, and a permanent record should read like a person
+wrote it.
+
 ## Special commits
 
 Reverts, merges, and other machinery commits (e.g. `git revert`'s generated
@@ -139,6 +156,9 @@ message) may keep their default format; don't force a scope onto them.
   what.
 - `auth: enhance login robustness ✨` breaks the house style three ways: filler
   verb, quality claim, emoji.
+- `parser: fix the bug you hit earlier` and `build: point at
+  /Users/me/tmp/out` reference chat context and a local path no future reader
+  can resolve. State the durable fact instead.
 - Inventing a new scope when `git log -- <changed-path>` shows an established one.
 
 When rewriting an existing vague message (e.g. `fix: bug`), don't invent
