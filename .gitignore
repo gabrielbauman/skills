@@ -1,2 +1,11 @@
 .DS_Store
 .claude/settings.local.json
+.claude/worktrees/
+
+# Editors
+.idea/
+.vscode/
+
+# Python (the adr_tools scripts are Python)
+__pycache__/
+*.py[cod]
