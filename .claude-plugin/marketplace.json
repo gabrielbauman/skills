@@ -63,6 +63,15 @@
       "skills": ["./skills/small-prs"]
     },
     {
+      "name": "test-behavior",
+      "description": "Write tests that verify observable behavior instead of pinning the implementation: assert on outcomes rather than mock calls and call counts, mock only at boundaries you do not control, name tests as behavior claims, cover boundaries and error paths, and reproduce bugs in a failing test before fixing",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["testing", "tdd", "code-quality", "mocking"],
+      "skills": ["./skills/test-behavior"]
+    },
+    {
       "name": "why-comments",
       "description": "Write code comments that explain why, never what: comment only on constraints, invariants, workarounds, and rejected alternatives, strip narration noise, keep docstrings as contracts, and enforce TODO hygiene",
       "source": "./",
