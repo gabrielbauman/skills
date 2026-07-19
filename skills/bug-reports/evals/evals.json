@@ -1,0 +1,51 @@
+{
+  "skill_name": "bug-reports",
+  "evals": [
+    {
+      "id": 1,
+      "name": "write-up-from-session",
+      "prompt": "File an issue for this. I just hit a bug in our app (v3.2.1, Firefox on macOS): I was editing my profile, cleared the display name field, hit save, and the page just went blank. Console showed 'TypeError: Cannot read properties of null (reading 'trim')' from profile.js. Reloading brings the profile back with the old name still set. Happens every time I leave the name empty; saving with a non-empty name works fine. I bet it's that new validation hook Marco added. Write the bug report.",
+      "expected_output": "A report with a symptom-plus-condition title (blank page / TypeError on saving profile with empty display name), numbered repro steps from a stated starting point, expected vs actual sections, the exact TypeError pasted verbatim in a code block, environment (v3.2.1, Firefox, macOS), frequency (always with empty name; non-empty works), and the Marco/validation-hook theory clearly labeled as unverified speculation, separate from the observations.",
+      "files": [],
+      "assertions": [
+        "Title states both symptom and condition, not 'profile save broken'",
+        "Contains numbered reproduction steps from a clean starting point ending at the failure",
+        "Has distinct expected and actual sections with the actual described as observed (blank page, console error)",
+        "Pastes the exact TypeError text verbatim in a code block rather than paraphrasing it",
+        "Records environment (version, browser, OS) and frequency (always when name empty, works otherwise)",
+        "The validation-hook theory is present but explicitly labeled as speculation/unverified and kept out of the factual sections",
+        "Includes the recovery observation (reload restores old name) as part of the evidence"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "split-and-descope",
+      "prompt": "Write up an issue for the team: the PDF invoice download 500s for invoices created before 2023 (I checked, newer ones download fine, and the server log shows 'KeyError: tax_regime' in pdf_builder.py). Also while testing I noticed the invoice list page takes like 8 seconds to load, and the download button is misaligned on mobile. Put it all in one ticket titled 'Invoice problems' so it doesn't get lost.",
+      "expected_output": "The agent declines the one-ticket approach with the reason (three independent bugs cannot be owned, prioritized, or closed together) and produces three separate reports, cross-linked. The 500 report is complete: title with condition (pre-2023 invoices), repro, expected/actual, exact KeyError pasted, the ruled-out boundary (post-2023 fine) recorded, and honest per-issue severity (the 500 is serious; the misalignment is minor, not inflated).",
+      "files": [],
+      "assertions": [
+        "Refuses to bundle the three problems into one 'Invoice problems' ticket and explains why (independent lifecycle/ownership)",
+        "Produces three distinct reports, cross-referenced",
+        "The 500 report's title carries the condition (invoices created before 2023)",
+        "The KeyError and its source location are quoted exactly in the 500 report",
+        "The already-established boundary (newer invoices fine) appears as ruled-out/scoping information",
+        "Severity is assessed per issue honestly rather than everything marked urgent"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "triage-vague-report",
+      "prompt": "A customer wrote in: 'Your sync feature doesn't work. It worked last week. Fix it.' Support wants to reply. Draft the response asking for what we need, and set up the issue skeleton we'll fill in.",
+      "expected_output": "A reply with specific, one-line-answerable questions (what happens when you trigger sync: error message shown? paste its exact text; which app version/platform; does it fail every time or sometimes; roughly when last week did it stop) rather than 'please provide more details', treating the reporter as holding real facts. Plus an issue skeleton with title-pending, expected/actual, steps, environment, frequency sections ready to fill, and any known facts (regression: worked last week) already recorded.",
+      "files": [],
+      "assertions": [
+        "Asks targeted, individually answerable questions instead of a generic request for more details",
+        "Requests the exact error text pasted as text (or exact on-screen behavior) rather than a description",
+        "Asks for environment/version and frequency (every time vs sometimes)",
+        "Captures the one known fact (worked last week, so a regression window exists) in the skeleton",
+        "Tone treats the vague report as recoverable signal, not noise; no resentment, no blame",
+        "Provides a structured issue skeleton with expected/actual/steps/environment/frequency sections"
+      ]
+    }
+  ]
+}
