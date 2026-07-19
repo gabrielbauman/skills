@@ -1,0 +1,47 @@
+{
+  "skill_name": "db-migrations",
+  "evals": [
+    {
+      "id": 1,
+      "name": "rename-in-place-resistance",
+      "prompt": "We're renaming the `status` column on our `orders` table to `state` because it collides with a new field. Write the migration for our Django app. This runs against production Postgres with continuous traffic and rolling deploys.",
+      "expected_output": "The agent refuses a single in-place RENAME because old code still runs against the new schema during a rolling deploy. It lays out the expand/contract sequence: add nullable `state` column, dual-write and read-with-fallback code deploy, batched backfill as a separate job, cutover deploy, and a delayed final migration dropping `status` on its own, marking the drop as the irreversible step.",
+      "files": [],
+      "assertions": [
+        "Does not produce a single-step in-place column rename as the solution",
+        "Explains the failure window: old code reading/writing the old name after the rename runs (rolling deploy overlap)",
+        "Sequence includes an expand step (add new nullable column) with no simultaneous code dependency",
+        "Includes a dual-write / read-fallback code stage before cutover",
+        "Backfill is a separate batched, resumable/idempotent job, not part of the schema migration",
+        "The drop of the old column ships in its own later migration/deploy, after a stated waiting or verification period",
+        "The destructive step is identified as irreversible with a backout consideration (snapshot/backup or explicit acknowledgment)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "hot-table-index",
+      "prompt": "Add an index on `events.account_id` so the dashboard queries stop timing out. The events table has about 400 million rows in production Postgres. Write the migration.",
+      "expected_output": "The agent uses CREATE INDEX CONCURRENTLY (and handles the framework implications, e.g. Django's atomic = False or the equivalent non-transactional migration setting), sets or discusses a lock timeout, and warns that a plain CREATE INDEX would block writes on the table for the duration of the build. It notes concurrent builds can fail and leave an invalid index that must be dropped and retried.",
+      "files": [],
+      "assertions": [
+        "Uses the concurrent index creation variant rather than plain CREATE INDEX",
+        "Explains what plain CREATE INDEX would do to a 400M-row hot table (write blocking for the build duration)",
+        "Handles the migration-framework consequence of CONCURRENTLY (cannot run inside a transaction; atomic=False or equivalent)",
+        "Mentions the failure mode of concurrent builds (invalid index left behind) or lock timeout handling"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "never-edit-applied",
+      "prompt": "Migration 0043 in our repo added a `discount_rate numeric(3,2)` column but it should have been numeric(5,2), some rates are over 9.99 and inserts are failing in staging and production where 0043 already ran. Quickest fix: can I just edit 0043 to say numeric(5,2) and re-run migrations?",
+      "expected_output": "The agent says no: 0043 has been applied in staging and production, so editing it silently diverges any environment that already ran it from any that runs the edited version, and most frameworks will not re-run it anyway. The fix is a new migration (0044) altering the column type, with a check on the lock/rewrite behavior of ALTER COLUMN TYPE on the affected table and engine (numeric widening being cheap or a rewrite depending on version).",
+      "files": [],
+      "assertions": [
+        "Rejects editing the already-applied migration and explains the divergence: environments that ran the old version will never pick up the edit",
+        "Proposes appending a new migration that alters the column type",
+        "Considers the lock or table-rewrite behavior of the type change on production, or verifies it is a metadata-only change for this engine",
+        "Does not propose deleting/faking migration state in production as the primary fix"
+      ]
+    }
+  ]
+}
