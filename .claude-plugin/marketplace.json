@@ -81,6 +81,15 @@
       "skills": ["./skills/humanize"]
     },
     {
+      "name": "naming",
+      "description": "Name variables, functions, types, and files for intent and role, not implementation or type: replace vague fillers (data, temp, handle), drop noise words (Manager, Helper, Util), strip type-restating and Hungarian suffixes, make booleans read as predicates, scale name length to scope, and match the codebase's conventions",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["naming", "code-quality", "readability", "style"],
+      "skills": ["./skills/naming"]
+    },
+    {
       "name": "scoped-commits",
       "description": "Write git commit messages in the Scoped Commits style (scope: description), with a concise plain-ASCII house style: no emoji, no em dashes, no filler",
       "source": "./",

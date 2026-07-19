@@ -1,0 +1,45 @@
+{
+  "skill_name": "naming",
+  "evals": [
+    {
+      "id": 1,
+      "name": "rename-vague-and-misleading",
+      "prompt": "Improve the names in this function without changing behaviour:\n\n```python\ndef proc(arr):\n    d = {}\n    tmp = 0\n    for x in arr:\n        d[x.id] = x\n        tmp += x.amount\n    flag = tmp > 1000\n    return d, tmp, flag\n```",
+      "expected_output": "Names describe role and intent: the dict becomes something like items_by_id, the accumulator total or total_amount, the boolean a predicate like is_over_limit, and the function a verb naming its purpose. No vague fillers (arr, d, tmp, x, flag) remain in wide scope; behaviour is unchanged.",
+      "files": [],
+      "assertions": [
+        "The dict keyed by id is renamed to something role-based (e.g. items_by_id / orders_by_id), not left as 'd'",
+        "The accumulator is renamed to total / total_amount rather than 'tmp'",
+        "The boolean is a predicate (starts with is_/has_/should_, e.g. is_over_limit), not 'flag'",
+        "The function 'proc' is renamed to a verb phrase describing what it does",
+        "No behaviour changed"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "drop-noise-and-type-suffixes",
+      "prompt": "Review these declarations and suggest better names, explaining each briefly:\n\n```typescript\nclass UserManager { /* authenticates users and issues sessions */ }\nconst userList: User[] = [];\nconst nameStr: string = '';\nconst configMap: Map<string, string> = new Map();\nfunction handleData(d: Upload) { /* parses a CSV upload into rows */ }\n```",
+      "expected_output": "Noise word Manager is replaced with a name for the actual responsibility (e.g. Authenticator / SessionIssuer); type-restating suffixes (List, Str, Map) are dropped so names carry role not type; handleData is renamed to a verb describing what it does (e.g. parseUpload / ingestCsv).",
+      "files": [],
+      "assertions": [
+        "UserManager is renamed to reflect its real responsibility (authentication/sessions), not left with the 'Manager' noise word",
+        "userList -> users, nameStr -> name, configMap -> config: the type-restating suffixes are dropped",
+        "handleData is renamed to a verb naming its purpose (e.g. parseUpload)",
+        "The reasoning names the principles: drop noise words, don't restate the type, name for intent"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "scope-appropriate-length",
+      "prompt": "Someone on my team renamed every loop variable to be 'descriptive', including three-line loops now using variables like currentIterationIndex and temporaryAccumulatorValue. They also shortened a module-level exported function from calculateMonthlyInterest to cmi. Is this the right call? What would you do?",
+      "expected_output": "Explains that name length should scale with scope: short-lived loop indices are fine as i/j and long descriptive names there are noise, while a widely-used exported function needs its full descriptive name and cmi is a cryptic abbreviation. Recommends reverting both directions.",
+      "files": [],
+      "assertions": [
+        "States that a tight-scope loop index can be short (i/j) and that long names there are noise, not an improvement",
+        "States that the exported/module-boundary function needs the descriptive name and cmi is too cryptic",
+        "Frames the rule as: name length scales with scope",
+        "Recommends reverting both changes (loops back to short, exported function back to the full name)"
+      ]
+    }
+  ]
+}
