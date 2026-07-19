@@ -59,15 +59,21 @@ say in the report which tier ran and why.
 - **Standard**: the default. Three specialists: correctness and design,
   security, tests and docs. Challenger runs only if a HIGH or MEDIUM
   finding comes back.
-- **Deep**: over roughly a thousand changed lines or twenty files, any
-  touch on security-sensitive surface (auth, crypto, payments,
-  permissions, deserialization), a release branch, or the user asked for
-  a thorough audit. Five specialists: split correctness from design,
-  split tests from docs, and add spec conformance when the repo has
-  written specs. Challenger always runs.
+- **Deep**: the change plus the code it can break exceeds what one
+  context can hold and verify: over roughly a thousand changed lines or
+  twenty files, a release branch, or security-sensitive surface (auth,
+  crypto, payments, permissions, deserialization) with blast radius you
+  cannot trace directly. Five specialists: split correctness from
+  design, split tests from docs, and add spec conformance when the repo
+  has written specs. Challenger always runs.
 
 The thresholds are guides, not gates. A 90-line diff that rewrites lock
 ordering deserves deep; a 2000-line generated-code bump deserves light.
+Sensitive surface demands evidence, not headcount: when the entire
+affected codebase is small enough to read and verify directly, light
+with full manual attention on the sensitive paths is the better spend.
+The override runs the other way too: when the user explicitly asks for
+the fleet or a deep review, dispatch it even if the branch looks small.
 
 ## Severity rubric
 
@@ -166,7 +172,11 @@ findings; shipping an unverified style preference is cheap, and an agent
 argued down over naming costs more than the nit is worth. Otherwise
 dispatch one challenger with the numbered HIGH and MEDIUM findings and
 the changed-file list. It reads the repo directly; it does not need the
-diff pasted either.
+diff pasted either. The challenger's value is independence from whoever
+authored the findings, so when the findings under challenge are not
+your own (a prior round's report, a list handed to you), you may run
+the challenge yourself under the same rules instead of dispatching an
+agent.
 
 The challenger's mission: a senior engineer who has watched review
 processes drown authors in phantom issues. For each finding: is this a
