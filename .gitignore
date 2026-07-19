@@ -5,6 +5,7 @@
 # Editors
 .idea/
 .vscode/
+.air/
 
 # Python (the adr_tools scripts are Python)
 __pycache__/
