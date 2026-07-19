@@ -1,0 +1,49 @@
+{
+  "skill_name": "reviewing-code",
+  "evals": [
+    {
+      "id": 1,
+      "name": "triage-and-verdict",
+      "prompt": "Review this PR diff for me and leave comments. It's from a teammate. The PR description says: \"Add CSV import for customer records (closes #310). Parses the upload, validates rows, inserts customers.\" The diff adds an `import_customers(path)` function that: opens the file with no encoding argument, loops over rows calling `db.insert(row)` once per row inside one transaction, skips rows where email is empty by silently continuing, and has a variable named `d` holding the parsed row. There are no tests in the diff.",
+      "expected_output": "A batched review that triages findings by severity: blocking on the silent row-skipping (data silently dropped with no report to the user) and the missing tests for the risky import path; the per-row insert flagged with its concrete cost and a bulk alternative; the variable name marked as a nit. Comments critique the code, cite consequences rather than taste, and the review ends with an explicit verdict stating exactly what unblocks.",
+      "files": [],
+      "assertions": [
+        "Sorts comments into explicit severity levels, with blocking items distinguished from suggestions and nits (e.g. a nit: prefix or equivalent labeling)",
+        "Blocks on the silent skipping of rows with empty email, citing the consequence (rows silently dropped, user never told) rather than style",
+        "Flags the missing tests for the import path as blocking or near-blocking, not as a nit",
+        "The per-row insert comment states a concrete cost (N round trips / transaction held open) rather than just 'inefficient'",
+        "The variable name `d` is treated as a nit, not a blocker",
+        "Ends with an explicit verdict (approve / request changes) that names exactly which comments block",
+        "Comments describe what the code does, not what the author did wrong personally"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "scope-and-taste-restraint",
+      "prompt": "I'm reviewing a small PR that fixes an off-by-one in pagination (changes `<=` to `<` in one place and adds a regression test). The file it touches is a mess though: 800 lines, mixed responsibilities, inconsistent naming, and it uses a callback style I'd never write today, I'd have used async/await for all of it. Draft my review.",
+      "expected_output": "A short review that approves the fix: the change achieves its intent and carries a regression test. It does not block on the surrounding mess or on the callback style (taste, and out of scope), and instead suggests filing a follow-up issue for the file cleanup. Depth of review matches the size and risk of the change.",
+      "files": [],
+      "assertions": [
+        "Approves (or clearly signals nothing blocks), since the fix is correct, small, and tested",
+        "Does not demand the 800-line file be refactored as a condition of this merge",
+        "Does not block on the callback-vs-async style preference, and either drops it or marks it explicitly non-blocking",
+        "Recommends routing the larger cleanup to a follow-up issue rather than this PR",
+        "Review length and depth are proportionate to a one-line fix plus test, not a full-file audit"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "ask-not-assert",
+      "prompt": "Reviewing a teammate's diff. It adds this to a payment webhook handler:\n\n    event = json.loads(request.body)\n    order = Order.objects.get(id=event[\"order_id\"])\n    order.mark_paid()\n\nI think there might be problems but I'm not sure what the surrounding code guarantees. Write the review comments I should leave.",
+      "expected_output": "Comments that raise the real risks (unverified webhook payload trusted to mark orders paid, unhandled missing order, duplicate delivery marking twice) phrased as genuine questions where the reviewer cannot see the guarantee (signature verification may exist upstream), and as grounded findings where the defect is visible in the diff. No fabricated certainty about code the reviewer has not seen.",
+      "files": [],
+      "assertions": [
+        "Raises the authenticity question: is the webhook payload verified (signature/source) before an order is marked paid",
+        "Raises what happens when order_id is absent from the payload or matches no Order (KeyError / DoesNotExist)",
+        "Raises idempotency: webhook providers redeliver, so mark_paid may run twice",
+        "Uses genuine questions for things that may be guaranteed elsewhere (e.g. upstream verification) instead of asserting they are missing",
+        "Does not invent claims about surrounding code it cannot see"
+      ]
+    }
+  ]
+}
