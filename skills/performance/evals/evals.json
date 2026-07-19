@@ -1,0 +1,48 @@
+{
+  "skill_name": "performance",
+  "evals": [
+    {
+      "id": 1,
+      "name": "profile-before-optimizing",
+      "prompt": "Our nightly report script (reports/nightly.py) has gotten slow, takes about 40 minutes now. I'm pretty sure it's the string formatting in render_row, Python string ops are slow. Optimize it.",
+      "expected_output": "The agent does not start by rewriting render_row. It first establishes a reproducible measurement (timing the script or a representative slice on realistic data volume) and profiles to find where the time actually goes, explaining that intuition about hotspots is unreliable. It asks for or defines the target (how fast does nightly need to be) and only optimizes what the profile names, checking for structural costs (per-row queries, quadratic loops, repeated I/O) before micro-optimizations, then re-measures and reports before/after numbers.",
+      "files": [],
+      "assertions": [
+        "Does not accept the string-formatting hypothesis without measurement, and says why intuition-driven optimization fails",
+        "Profiles or otherwise measures where time goes before changing code",
+        "Establishes a baseline number and a rerunnable measurement method",
+        "Looks for structural costs (round trips, N+1, algorithmic shape, redundant work) ahead of micro-optimizations",
+        "States or asks for a stopping target rather than optimizing indefinitely",
+        "Plans to re-measure after each change and report before/after figures"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "n-plus-one-over-cache",
+      "prompt": "The /api/team-summary endpoint is slow (about 6s for big teams). Here's the handler:\n\n    def team_summary(team_id):\n        team = Team.get(team_id)\n        members = Member.where(team_id=team_id)\n        out = []\n        for m in members:\n            user = User.get(m.user_id)          # one query each\n            badges = Badge.where(user_id=user.id)  # one more each\n            out.append(summarize(user, badges))\n        return out\n\nI was thinking we just cache the whole response for 10 minutes with Redis. Sound good? Implement whatever's best.",
+      "expected_output": "The agent identifies the N+1 pattern (two queries per member) and fixes it structurally with batched queries or joins, rather than reaching for the cache first. It explains why caching here is the inferior first move (staleness visible to users, invalidation on membership/badge changes, cold-start misses still slow) and that batching removes the cost for every request. If caching is still discussed, it comes with an invalidation and staleness story, and the change is verified by re-measuring the endpoint.",
+      "files": [],
+      "assertions": [
+        "Names the N+1 query pattern and quantifies it (roughly 2 queries per member)",
+        "Fixes it with batched fetches / IN queries / joins rather than per-row queries",
+        "Treats the proposed 10-minute cache as a last resort, citing at least invalidation or staleness as the cost",
+        "Re-measures (or explicitly plans to re-measure) the endpoint after the change against the 6s baseline",
+        "Does not layer the cache on top of the unfixed N+1 as the primary solution"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "revert-unmeasured-wins",
+      "prompt": "A teammate's PR claims to speed up our CSV ingest. It replaces a readable dict-based dedupe with a hand-rolled sorted-array binary search thing (about 80 new lines), interns all strings, and adds __slots__ to three classes. No numbers in the PR, description just says 'performance improvements'. Ingest of our standard 2GB test file took 8m10s before the PR. Review it.",
+      "expected_output": "The agent's review requires measurement: run the standard 2GB ingest against the branch and compare to the 8m10s baseline, evaluating each of the three changes on its own contribution where feasible. Unverified complexity is the finding: an optimization with no measured delta is just complexity and should be reverted, especially the 80-line dedupe rewrite replacing a dict (which is already O(1) lookup, so the claimed win is dubious). The review asks for before/after numbers and the measurement method in the PR description.",
+      "files": [],
+      "assertions": [
+        "Requires a measured before/after comparison on the standard workload before accepting the PR",
+        "Questions the dict-to-binary-search dedupe specifically (dict lookup is already constant-time; 80 lines of complexity need a demonstrated win)",
+        "Applies the rule that changes not moving the metric get reverted regardless of cleverness",
+        "Asks for the numbers and measurement method to be recorded in the PR",
+        "Evaluates changes individually rather than accepting or rejecting the bundle blind"
+      ]
+    }
+  ]
+}
