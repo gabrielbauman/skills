@@ -1,0 +1,58 @@
+{
+  "skill_name": "error-handling",
+  "evals": [
+    {
+      "id": 1,
+      "name": "no-silent-swallow",
+      "prompt": "This helper keeps returning None and I can't tell why. Clean it up so failures aren't hidden, but a cold cache should still be fine:\n\n```python\ndef get_profile(user_id):\n    try:\n        return cache.get(f\"profile:{user_id}\")\n    except Exception:\n        return None\n```\n\ncache.get raises CacheMiss on a cold key and can raise ConnectionError if the cache server is down.",
+      "expected_output": "The agent narrows the catch so only the expected CacheMiss is treated as a normal cold-cache None, while ConnectionError (and any other unexpected failure) surfaces instead of being swallowed. It does not leave a bare except-Exception-return-None that hides the connection failure.",
+      "files": [],
+      "assertions": [
+        "Catches CacheMiss specifically rather than a bare `except Exception`",
+        "A cold cache still returns None (or triggers a recompute), preserving the intended behavior",
+        "A ConnectionError is no longer swallowed: it propagates, or is logged with its detail and re-raised, rather than silently becoming None",
+        "If any broad catch remains, it logs the full error rather than discarding it",
+        "Explains that the original code hid the connection failure behind the same None as a normal miss"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "preserve-cause-and-context",
+      "prompt": "Wrap this so a config load failure gives a clear error, but I keep getting 'could not load config' with no idea what actually went wrong:\n\n```python\ndef load_config(path):\n    try:\n        with open(path) as f:\n            return yaml.safe_load(f)\n    except Exception:\n        raise ConfigError(\"could not load config\")\n```",
+      "expected_output": "The agent chains the original exception with `raise ... from e` so the cause and traceback survive, and enriches the message with the path (and ideally narrows the caught types to OSError/YAMLError). It does not keep flattening every failure into a causeless generic string.",
+      "files": [],
+      "assertions": [
+        "Uses `raise ConfigError(...) from e` (or equivalent) so the underlying cause and its traceback are preserved",
+        "The new message names the config path, so the reader can act on it",
+        "Does not reduce the original exception to a bare string that discards the exception object and its type",
+        "Explains that the original discarded the cause, so the caller could not tell a missing file from malformed YAML"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "fail-early-not-plausible",
+      "prompt": "Reviewers keep filing wrong-total bugs against this. Make it more robust:\n\n```python\nRATES = {\"USD\": 1.0, \"EUR\": 1.08, \"GBP\": 1.27}\n\ndef to_usd_cents(amount, currency):\n    rate = RATES.get(currency, 0)\n    return int(amount * rate * 100)\n```",
+      "expected_output": "The agent makes an unknown currency fail loudly at the point of the bad input rather than silently multiplying by a 0 rate and returning a plausible-but-wrong 0. The error names the offending currency.",
+      "files": [],
+      "assertions": [
+        "An unknown currency raises an error instead of defaulting the rate to 0 and returning 0 cents",
+        "The error message includes the offending currency value so the caller can locate it",
+        "Does not 'robustify' by catching and returning a fallback total; it fails at the bad input",
+        "Explains that the silent 0-rate default produced a wrong answer with no crash, which is why the bugs were hard to trace"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "no-leak-to-user",
+      "prompt": "Our checkout endpoint returns 500s with the raw exception text in the body. Fix the handler so users get something reasonable but we can still debug:\n\n```python\n@app.post(\"/checkout\")\ndef checkout():\n    try:\n        return do_checkout(request.json)\n    except Exception as e:\n        return Response(str(e), status=500)\n```",
+      "expected_output": "The agent stops returning the raw exception string to the client and instead logs the full error (with stack) server-side while returning a generic user-facing message tied to a reference id. It does not simply reword the leaked string.",
+      "files": [],
+      "assertions": [
+        "The raw exception text (str(e)) is no longer returned in the HTTP response body",
+        "The full error including the stack trace is logged server-side (e.g. log.exception)",
+        "The user-facing response is a generic message, ideally carrying a reference id that ties it to the logged record",
+        "Explains the risk: raw exception text can leak SQL, file paths, or connection details to whoever hits the endpoint"
+      ]
+    }
+  ]
+}
