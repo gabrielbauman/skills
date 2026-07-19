@@ -1,0 +1,49 @@
+{
+  "skill_name": "debugging",
+  "evals": [
+    {
+      "id": 1,
+      "name": "famous-fix-resistance",
+      "prompt": "Production broke right after today's deploy. The logs show:\n\npsycopg2.errors.UndefinedTable: relation \"users\" does not exist\n\nThe migration that creates the users table ran months ago and production was fine until this deploy. The deploy changed the config loader and bumped two dependencies. Fix it.",
+      "expected_output": "The agent investigates what changed in the deploy (the config loader is the prime suspect: the app is likely connecting to the wrong database or schema) instead of generating a migration for a table that already exists. It states a hypothesis, keeps it a hypothesis, and verifies it by observation before editing code.",
+      "files": [],
+      "assertions": [
+        "Does not create or generate a migration for the users table, and states why migrating is the wrong move (the table exists in the database the app should be talking to)",
+        "Identifies the deploy diff (especially the config loader) as the prime suspect: what changed, not what is famous",
+        "Proposes verifying which database or schema the app now connects to, before editing code",
+        "States a hypothesis plus the observation that would confirm or kill it",
+        "Presents the config-loader mechanism as a hypothesis pending observation, not as a confirmed fact",
+        "Distinguishes immediate mitigation (revert the deploy, restore the config) from the durable fix, rather than presenting one change as the whole answer"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "symptom-patch-resistance",
+      "prompt": "This crashes for some accounts. Account 4821 hits IndexError: list index out of range at the `first = rows[0]` line.\n\n```python\ndef summarize(orders):\n    return [o for o in orders if o.status == \"SETTLED\"]\n\ndef render_summary(orders):\n    rows = summarize(orders)\n    first = rows[0]\n    return render(first, rows)\n```\n\nJust add a guard so it stops crashing.",
+      "expected_output": "The agent works out why rows is empty before guarding: summarize() filters to SETTLED orders, so an account with only pending orders yields an empty list. The fix renders the empty case as an explicit, correct outcome (or changes the filter if that is the intent), not a bare try/except or fallback value that hides the condition. It reproduces the crash for an account with no settled orders, verifies the fix against that repro, and confirms previously working accounts are unaffected.",
+      "files": [],
+      "assertions": [
+        "Investigates why rows is empty (traces it to summarize()'s filter) instead of only patching the crash line",
+        "Explains the cause: accounts with no settled orders produce an empty rows",
+        "The fix treats the empty case as an explicit outcome; it does not substitute a fallback row or silently swallow the IndexError",
+        "Reproduces the crash for an account with no settled orders and verifies the fix against that repro",
+        "Previously working accounts (with settled orders) produce unchanged output after the fix"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "revert-unverified-attempts",
+      "prompt": "This API call fails intermittently with ConnectionResetError and it's still broken. So far I've: upgraded requests to 2.32, disabled SSL verification, and added a 30s timeout. Here's the current code:\n\n```python\ndef fetch_report(url):\n    resp = requests.get(url, timeout=30, verify=False)\n    resp.raise_for_status()\n    return resp.json()\n```\n\nFix it.",
+      "expected_output": "The agent recognizes three stacked unverified changes and states the disposition of each with justification (re-enabling SSL verification immediately, since disabling it is a security regression regardless). It reproduces the intermittent failure with repeated runs and logging before changing code further, tests one hypothesis at a time, and demonstrates the fix against the reproduction.",
+      "files": [],
+      "assertions": [
+        "Flags that the three prior changes were stacked without individual verification",
+        "Re-enables SSL verification (verify=True or removal of the argument) and flags verify=False as a security regression to revert regardless of the bug",
+        "Reproduces the intermittent failure (repeated runs logging the actual reset)",
+        "The reproduction happens before further code changes, not after",
+        "States the disposition of each prior change (keep or revert) with justification, reverting any change not proven to fix a real defect",
+        "Demonstrates the fix against the reproduction (original code fails, fixed code succeeds, or an equivalent before/after measurement)"
+      ]
+    }
+  ]
+}
