@@ -36,6 +36,15 @@
       "skills": ["./skills/branch-review"]
     },
     {
+      "name": "bug-reports",
+      "description": "Write bug reports a stranger can act on: one bug per report, symptom-plus-condition titles, expected vs actual, numbered repro steps from a clean start, exact error text pasted verbatim, environment and frequency, and speculation labeled separately from observation",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["bugs", "issues", "triage", "documentation", "workflow"],
+      "skills": ["./skills/bug-reports"]
+    },
+    {
       "name": "changelog",
       "description": "Write CHANGELOG.md entries by curating the diff for end users instead of transcribing the git log: Common Changelog format, breaking changes bolded first with migration pointers, and rules for what deserves no entry at all",
       "source": "./",
@@ -43,6 +52,15 @@
       "category": "workflow",
       "tags": ["changelog", "release", "git", "documentation"],
       "skills": ["./skills/changelog"]
+    },
+    {
+      "name": "db-migrations",
+      "description": "Change database schemas without breaking the running system: expand and contract instead of in-place renames, backfills as batched resumable jobs separate from DDL, destructive steps in their own later deploy, applied migrations never edited, and lock behavior checked before DDL on hot tables",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["database", "migrations", "schema", "deployment", "reliability"],
+      "skills": ["./skills/db-migrations"]
     },
     {
       "name": "debugging",
@@ -54,6 +72,15 @@
       "skills": ["./skills/debugging"]
     },
     {
+      "name": "dependencies",
+      "description": "Manage third-party dependencies as long-term liabilities: vet a package before adding it (maintenance, transitive weight, license, exact name), commit the lockfile, bump one dependency at a time with the upstream changelog read first, keep bumps out of feature branches, and remove packages that stop paying rent",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["dependencies", "packages", "supply-chain", "versioning", "security"],
+      "skills": ["./skills/dependencies"]
+    },
+    {
       "name": "error-handling",
       "description": "Handle errors so failures are loud, actionable, and traceable: fail early instead of limping on bad state, never swallow an exception silently, write messages that name what was attempted with which inputs, preserve the underlying cause when rethrowing, catch at the boundary that can act, choose retry vs propagate vs crash, and never leak secrets or internals to users",
       "source": "./",
@@ -61,6 +88,15 @@
       "category": "workflow",
       "tags": ["error-handling", "exceptions", "code-quality", "reliability"],
       "skills": ["./skills/error-handling"]
+    },
+    {
+      "name": "flaky-tests",
+      "description": "Treat intermittently failing tests as bugs to fix, not nuisances to rerun: quarantine visibly with an owner and expiry, reproduce with a counted loop, diagnose the usual suspects (sleeps, test order, shared state, randomness, clocks, network, leaked resources), and fix the mechanism instead of widening the timeout",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["testing", "flaky", "ci", "reliability", "code-quality"],
+      "skills": ["./skills/flaky-tests"]
     },
     {
       "name": "git-recovery",
@@ -108,6 +144,15 @@
       "skills": ["./skills/naming"]
     },
     {
+      "name": "performance",
+      "description": "Optimize measured hotspots against a stated target instead of guessing: profile first, set a numeric goal so you know when to stop, take structural wins (N+1 queries, missing indexes, quadratic loops) before micro-optimizations, change one thing at a time and re-measure, treat caching as a last resort, and record before/after numbers",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["performance", "profiling", "optimization", "benchmarking", "code-quality"],
+      "skills": ["./skills/performance"]
+    },
+    {
       "name": "refactoring",
       "description": "Refactor safely: change structure while preserving observable behavior exactly, keep the tests green after every step, work in small reversible moves instead of a big-bang rewrite, add characterization tests before touching untested code, and commit the refactor apart from any behavior change",
       "source": "./",
@@ -117,6 +162,15 @@
       "skills": ["./skills/refactoring"]
     },
     {
+      "name": "reviewing-code",
+      "description": "Review pull requests like a good colleague: understand the intent before judging the diff, separate blocking defects from suggestions and nits, ground every blocker in a defect or written rule rather than taste, ask genuine questions, leave style to the tools, stay inside the PR's scope, and end with an explicit verdict",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["review", "pull-requests", "code-quality", "collaboration"],
+      "skills": ["./skills/reviewing-code"]
+    },
+    {
       "name": "scoped-commits",
       "description": "Write git commit messages in the Scoped Commits style (scope: description), with a concise plain-ASCII house style: no emoji, no em dashes, no filler",
       "source": "./",
@@ -124,6 +178,15 @@
       "category": "workflow",
       "tags": ["git", "commits", "version-control", "style"],
       "skills": ["./skills/scoped-commits"]
+    },
+    {
+      "name": "secure-coding",
+      "description": "Write code that holds at the trust boundary: treat all external input as attacker-controlled, parameterize instead of concatenating SQL, shell, HTML, and paths, authorize at every resource access, keep secrets out of code, logs, and URLs, use vetted crypto and password hashing, and fail closed when checks cannot complete",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["security", "injection", "authorization", "secrets", "code-quality"],
+      "skills": ["./skills/secure-coding"]
     },
     {
       "name": "small-prs",
@@ -151,6 +214,15 @@
       "category": "workflow",
       "tags": ["comments", "code-quality", "documentation", "style"],
       "skills": ["./skills/why-comments"]
+    },
+    {
+      "name": "writing-docs",
+      "description": "Write documentation for the reader arriving with a task: lead the README with a copy-pasteable quickstart, keep tutorials, how-tos, reference, and explanation separate, prefer runnable examples over prose, document the sharp edges users actually hit, and fix or delete stale docs on sight",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["documentation", "readme", "writing", "onboarding"],
+      "skills": ["./skills/writing-docs"]
     }
   ]
 }
