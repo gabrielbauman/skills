@@ -1,6 +1,6 @@
 ---
 name: debugging
-description: "Debug systematically instead of speculatively: reproduce the failure first, read the actual error, test one hypothesis at a time, isolate the cause before changing code, and verify the fix against the original reproduction. Use whenever investigating a bug, crash, error, test failure, or unexpected behavior, when a fix did not work, when a failure is intermittent, when tempted to try a change just to see if it helps, or when asked why something broke. Covers capturing a rerunnable reproduction, reading the whole error instead of pattern-matching to a famous fix, reverting unverified attempts, bisecting and shrinking the failing case, fixing the cause rather than the symptom nearest the crash, verifying against the repro rather than the green suite, and when to stop and report instead of piling on another guess. Pairs with test-behavior, which turns the reproduction into the permanent regression test."
+description: "Debug systematically instead of speculatively: reproduce the failure first, read the actual error, test one hypothesis at a time, isolate the cause before changing code, and verify the fix against the original reproduction. Use whenever investigating a bug, crash, error, test failure, or unexpected behavior, when a fix did not work, when a failure is intermittent, when tempted to try a change just to see if it helps, or when asked why something broke. Covers separating live-incident mitigation (roll back first) from the durable fix, capturing a rerunnable reproduction, reading the whole error instead of pattern-matching to a famous fix, reverting unverified attempts, bisecting and shrinking the failing case, fixing the cause rather than the symptom nearest the crash, verifying against the repro rather than the green suite, and when to stop and report instead of piling on another guess. Pairs with test-behavior, which turns the reproduction into the permanent regression test."
 ---
 
 # Debugging
@@ -14,6 +14,20 @@ and the tree now needs its own debugging.
 Systematic debugging is a short loop: reproduce the failure, find what is
 actually wrong, fix that, and prove it on the reproduction. The steps
 below are in order; the discipline is not skipping ahead.
+
+## Live failure? Stop the bleeding first
+
+When the failure is burning right now (production down, users blocked)
+and arrived with a known change, mitigation and diagnosis are separate
+tracks. Reverting the deploy, restoring the old config, or flipping the
+flag off is not the fix; it is first aid that ends the outage so the
+debugging that follows is not done under fire. It is also the first
+experiment: if the rollback clears the failure, the change is confirmed
+as the trigger. Capture what the live failure offers first (logs, the
+error, a snapshot of the bad state), since mitigating destroys the crime
+scene. Then debug at normal pressure and land the durable fix. Offer both
+tracks explicitly; "I can fix this properly in an hour" is not a reason
+to leave production down for an hour.
 
 ## Reproduce first
 
