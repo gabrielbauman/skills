@@ -16,8 +16,9 @@ dashes, no filler, bodies as short why-focused paragraphs.
 ## Adding or changing a skill
 
 1. Put the skill at `skills/<name>/SKILL.md`. The frontmatter `name` must
-   match the directory name. Add `references/`, `scripts/`, and
-   `evals/evals.json` as needed.
+   match the directory name. Every skill ships `evals/evals.json` with 2-4
+   realistic prompts and gradeable assertions; copy the format from an
+   existing skill. Add `references/` and `scripts/` as needed.
    Frontmatter must be strict YAML: double-quote the `description` value,
    since useful descriptions usually contain a colon and space, which breaks
    plain scalars. Claude Code parses them anyway; the skills.sh CLI silently
@@ -30,6 +31,13 @@ dashes, no filler, bodies as short why-focused paragraphs.
    (needs PyYAML) and make sure both pass before committing. CI runs the same
    checks plus a skills.sh discovery test, and lints PR commit subjects for
    the scoped format.
+
+Skill text conventions: the description carries the triggering (what the
+skill does, when to use it, what it covers) and ends with pairing notes
+pointing at sibling skills where they overlap; add the reverse pointer in
+the sibling. Bodies run roughly 100-250 lines, open by naming the failure
+mode the skill exists to correct, and give each rule with its reason, with
+concrete before/after examples over abstract restatements.
 
 ## Prose style
 
