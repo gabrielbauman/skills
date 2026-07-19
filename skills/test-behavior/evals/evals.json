@@ -1,0 +1,47 @@
+{
+  "skill_name": "test-behavior",
+  "evals": [
+    {
+      "id": 1,
+      "name": "rewrite-mock-pinned-test",
+      "prompt": "This test breaks every time someone refactors the mailer wiring. Rewrite it so it only fails when the behavior is actually wrong.\n\n```python\n# accounts.py\nclass PasswordReset:\n    def __init__(self, users, mailer):\n        self.users = users\n        self.mailer = mailer\n\n    def request_reset(self, email):\n        user = self.users.by_email(email)\n        if user is None:\n            raise UnknownEmail(email)\n        token = user.new_reset_token()\n        self.mailer.send(email, \"Reset your password\", f\"https://app.example/reset/{token}\")\n\n# test_accounts.py\ndef test_request_reset():\n    users = Mock()\n    user = Mock()\n    user.new_reset_token.return_value = \"tok123\"\n    users.by_email.return_value = user\n    mailer = Mock()\n    PasswordReset(users, mailer).request_reset(\"a@example.com\")\n    users.by_email.assert_called_once_with(\"a@example.com\")\n    user.new_reset_token.assert_called_once_with()\n    mailer.send.assert_called_once()\n```",
+      "expected_output": "The rewritten test asserts the observable outcome: the email that crossed the boundary, with the real recipient and a reset URL containing the token. Call-count and internal-collaboration assertions are gone. A fake mailer that records sent mail is fine; asserting mailer.send received the exact arguments is also acceptable. The test name states the behavior claim.",
+      "files": [],
+      "assertions": [
+        "The test asserts the exact message that crossed the boundary: recipient 'a@example.com' and a body or URL containing the token 'tok123'",
+        "No bare call-count assertions (assert_called_once with no argument check) remain",
+        "No assertions on internal collaboration for its own sake (users.by_email or new_reset_token call counts)",
+        "The test would fail if the URL or recipient were wrong, and would survive renaming or rewiring internals",
+        "The test name states a behavior claim (e.g. sends_reset_email_with_token), not test_request_reset"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "bug-fix-red-before-green",
+      "prompt": "Bug report: parse_duration('0') raises ValueError, but in our config a zero duration means 'disabled' and should parse to 0. Fix it.\n\n```python\ndef parse_duration(s):\n    \"\"\"Parse '90s', '5m', '2h' to seconds.\"\"\"\n    units = {'s': 1, 'm': 60, 'h': 3600}\n    unit = s[-1]\n    n = int(s[:-1])\n    if n <= 0:\n        raise ValueError(\"duration must be positive\")\n    return n * units[unit]\n```",
+      "expected_output": "A new test asserting parse_duration('0') == 0, run and observed failing before the fix, then the fix, then the test passing. The expected value comes from the report (zero means disabled), and the fix is limited to the zero handling.",
+      "files": [],
+      "assertions": [
+        "A test for parse_duration('0') == 0 is written before the code change",
+        "The transcript shows the new test failing before the fix and passing after (red before green)",
+        "The failure observed before the fix is the ValueError from the bug, not a test error (typo, import failure, wrong call)",
+        "The fix changes only the zero handling; no unrelated refactoring",
+        "Positive durations and the negative-input error still behave as before"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "boundary-and-error-coverage",
+      "prompt": "Add tests for this function.\n\n```python\ndef clamp(value, lo, hi):\n    \"\"\"Clamp value into [lo, hi]. Raises ValueError if lo > hi.\"\"\"\n    if lo > hi:\n        raise ValueError(f\"empty range: {lo} > {hi}\")\n    return max(lo, min(value, hi))\n```",
+      "expected_output": "Tests covering the boundaries (value exactly at lo, exactly at hi, just outside each end) and the error path (lo > hi raises ValueError), each named as a behavior claim. No mocks, no assertion-free tests, no single happy-path-only test.",
+      "files": [],
+      "assertions": [
+        "Boundary cases are covered: value == lo, value == hi, value below lo, value above hi",
+        "The lo > hi error path is tested with the raised error type asserted",
+        "Every test name states a behavior claim (e.g. test_value_below_range_returns_lo), not test_clamp_1 or test_success",
+        "No mocks: the function is pure and needs none",
+        "Each test asserts a specific expected value; no assertIsNotNone-style filler"
+      ]
+    }
+  ]
+}
