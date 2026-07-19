@@ -99,6 +99,15 @@
       "skills": ["./skills/naming"]
     },
     {
+      "name": "refactoring",
+      "description": "Refactor safely: change structure while preserving observable behavior exactly, keep the tests green after every step, work in small reversible moves instead of a big-bang rewrite, add characterization tests before touching untested code, and commit the refactor apart from any behavior change",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["refactoring", "code-quality", "testing", "review"],
+      "skills": ["./skills/refactoring"]
+    },
+    {
       "name": "scoped-commits",
       "description": "Write git commit messages in the Scoped Commits style (scope: description), with a concise plain-ASCII house style: no emoji, no em dashes, no filler",
       "source": "./",

@@ -1,0 +1,53 @@
+{
+  "skill_name": "refactoring",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The checkout function in billing/checkout.py has grown into a 200-line mess. Extract the tax and discount logic into their own functions to clean it up. It has decent test coverage.",
+      "expected_output": "The agent runs the existing tests first to confirm green, extracts tax and discount into separate functions in small steps re-running tests after each, preserves observable behavior exactly (no bug fixes or behavior tweaks folded in), and commits the extraction as a refactor-only change.",
+      "files": [],
+      "assertions": [
+        "The agent runs the existing tests before starting and confirms they pass",
+        "The extraction preserves observable behavior with no feature, fix, or behavior change mixed in",
+        "The work proceeds in small steps with tests run between them, not one large edit verified only at the end",
+        "The refactor is committed on its own, described as a no-behavior-change refactor"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the legacy parseConfig function in config/parse.go. It has no tests at all and the control flow is a rat's nest of nested ifs. Make it readable.",
+      "expected_output": "The agent recognizes the code is untested and writes characterization tests that pin down the current behavior (bug-for-bug) before restructuring, then refactors in small steps keeping those tests green, rather than restructuring blind and asserting behavior is unchanged.",
+      "files": [],
+      "assertions": [
+        "The agent adds characterization tests capturing current behavior before restructuring the code",
+        "The characterization tests assert what the code does today, including quirks, not an idealized contract",
+        "The restructuring is done in small steps with the new tests kept green throughout",
+        "No behavior change is introduced under the refactor, or if a bug is spotted it is called out for a separate change rather than fixed in place"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "While you're renaming the User.load method to User.fetch across the codebase, I noticed it doesn't handle the case where the ID is null and it probably should return an error there. Fix that too while you're in there.",
+      "expected_output": "The agent keeps the rename (a pure refactor) separate from the null-handling behavior change: the rename lands as its own commit with no behavior change, and the null-ID error handling lands as a separate commit with a test, rather than bundling both into one diff.",
+      "files": [],
+      "assertions": [
+        "The rename is kept as a behavior-preserving refactor with no logic changes mixed in",
+        "The null-ID handling is treated as a separate behavior change, committed apart from the rename",
+        "The behavior change ships with a test demonstrating the new null handling",
+        "The agent does not fold the fix into the rename commit or diff"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "This payment retry module is ugly and I hate looking at it. Rewrite it from scratch to be cleaner. It's the code path that charges customer cards in production.",
+      "expected_output": "The agent resists a big-bang rewrite of a critical untested-or-lightly-tested path, instead ensuring a test safety net exists and reshaping incrementally while keeping the suite green, or building a replacement beside the original and migrating call sites one at a time rather than deleting and rewriting in one edit.",
+      "files": [],
+      "assertions": [
+        "The agent does not delete and rewrite the module in one big-bang edit that is never green in between",
+        "The agent establishes or confirms a test safety net before restructuring the critical path",
+        "Any replacement is introduced incrementally, keeping the code building and tests green throughout",
+        "Behavior of the payment path is preserved, with structural cleanup separated from any behavior change"
+      ]
+    }
+  ]
+}
