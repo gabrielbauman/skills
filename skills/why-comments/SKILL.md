@@ -1,6 +1,6 @@
 ---
 name: why-comments
-description: "Write code comments that explain why, never what, and strip comment noise from existing code. Use whenever writing code, editing code that has comments, writing docstrings or API docs, or asked to clean up, reduce, or improve comments. Covers when a comment is warranted at all (constraints, invariants, workarounds, rejected alternatives) versus noise (narrating the next line, section banners, restating names), reviewer-directed comments that go stale at merge, matching the codebase's comment density, TODO hygiene, and the rule for comments you don't understand."
+description: "Write code comments that explain why, never what, and strip comment noise from existing code. Use whenever writing code, editing code that has comments, writing docstrings or API docs, or asked to clean up, reduce, or improve comments. Covers when a comment is warranted at all (constraints, invariants, workarounds, rejected alternatives) versus noise (narrating the next line, section banners, restating names), reviewer-directed comments that go stale at merge, matching the codebase's comment density, TODO hygiene, and the rule for comments you don't understand. Pairs with error-handling, for commenting the non-obvious reason behind a catch or rethrow."
 ---
 
 # Why-comments
