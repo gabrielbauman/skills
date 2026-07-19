@@ -1,0 +1,49 @@
+{
+  "skill_name": "writing-docs",
+  "evals": [
+    {
+      "id": 1,
+      "name": "readme-for-first-success",
+      "prompt": "Write a README for my project. It's a Python CLI called `lograte` that tails a log file and prints per-endpoint request rates. Install is `pip install lograte`, needs Python 3.11+, run it like `lograte /var/log/nginx/access.log --window 60`. It breaks with a cryptic error if the log format isn't 'combined'. I also want to talk about the streaming architecture and why I used a ring buffer.",
+      "expected_output": "A README that opens with one or two concrete sentences saying what lograte is, then a copy-pasteable quickstart (prerequisite Python 3.11+ stated before the commands, pip install, a run command, and what output to expect). The log-format sharp edge is documented as an 'if you see X, it means Y' note near where users hit it. The ring-buffer/architecture discussion is placed below the fold or in a separate section/file, not ahead of the quickstart. Prose is specific, no marketing adjectives.",
+      "files": [],
+      "assertions": [
+        "Opens with a concrete one-to-two sentence description of what the tool does",
+        "Quickstart appears before any architecture discussion and is copy-pasteable (install + run command)",
+        "States the Python 3.11+ prerequisite before or with the install command",
+        "Documents the non-combined log format failure as a symptom-meaning-fix note, not buried or omitted",
+        "Architecture/ring-buffer material is separated from and subordinate to the getting-started path",
+        "Includes what output the user should expect on a successful run",
+        "Avoids marketing filler (blazingly fast, robust, flexible) in favor of specifics"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "stale-doc-disposition",
+      "prompt": "Our docs/setup.md still tells people to run `docker-compose up` with a compose file we deleted last year, and describes env vars that were renamed (DB_URL is now DATABASE_URL, CACHE_HOST no longer exists). The real setup is: copy .env.example to .env, run `make dev`. People keep following the old doc and asking why it fails. Sort this out.",
+      "expected_output": "The agent rewrites setup.md to the current truth (copy .env.example, make dev), deleting the wrong compose instructions and dead env vars outright rather than preserving them with 'deprecated' hedges, and explains the principle: a wrong doc is worse than a missing one because it burns reader trust and sends people down dead paths. Ideally it also notes keeping the setup doc close to the code so future renames catch it in review, and checks for other references to the deleted compose file or old var names.",
+      "files": [],
+      "assertions": [
+        "Replaces the stale instructions with the current two-step setup rather than layering corrections on top",
+        "Deletes the references to the removed compose file and CACHE_HOST instead of keeping them annotated",
+        "Uses the current DATABASE_URL name",
+        "States the wrong-beats-missing rationale (stale docs actively mislead and erode trust)",
+        "Searches for or mentions checking other docs/references for the same stale names"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "separate-doc-kinds",
+      "prompt": "Document our new webhooks feature. I need something for developers who've never used it to get their first webhook firing, plus somewhere that lists every event type and payload field, plus we should explain the retry/backoff design and why we sign payloads. Can that just be one big webhooks.md?",
+      "expected_output": "The agent applies the tutorial/how-to/reference/explanation split (naming Diataxis or the equivalent reasoning): a getting-started tutorial with one guaranteed path to a first firing webhook, a reference section/page with uniform entries for every event type and payload field, and an explanation section for retry/backoff and signing rationale, linked rather than interleaved. It explains why mixing them fails (rationale detours lose the beginner; chatty reference loses the looker-upper). Delivered docs use runnable, copy-pasteable examples with expected output.",
+      "files": [],
+      "assertions": [
+        "Separates the three needs into distinct documents or clearly separated sections by reader type, rather than interleaving them",
+        "Gives the reasoning for the separation (different readers optimize for different things), not just the structure",
+        "The beginner path is a single guided sequence ending in a verifiable first success",
+        "The event/payload listing is structured as uniform reference entries",
+        "Examples are concrete and runnable (real curl/code with expected responses) rather than described in prose"
+      ]
+    }
+  ]
+}
