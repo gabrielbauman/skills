@@ -1,0 +1,53 @@
+{
+  "skill_name": "git-recovery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My feature branch has five commits and three of them are just 'wip', 'more wip', 'fix'. I haven't pushed yet. Clean up the history into a couple of sensible commits before I open a PR.",
+      "expected_output": "An interactive rebase (or a scripted non-interactive equivalent) that squashes the WIP commits into meaningful ones and rewords messages, done only because the branch is unpushed, with no force-push needed to a shared branch.",
+      "files": [],
+      "assertions": [
+        "Uses git rebase (interactive or a scripted GIT_SEQUENCE_EDITOR/autosquash equivalent) to squash the WIP commits",
+        "Confirms or relies on the branch being unpushed/unshared before rewriting history",
+        "Does not use git revert to clean up local unshared commits",
+        "Final history has fewer, meaningfully-named commits rather than the WIP chain"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I just ran git reset --hard HEAD~3 on my branch and realized I actually needed those three commits. They're gone from git log. Can I get them back?",
+      "expected_output": "Recovery via git reflog: find the pre-reset HEAD entry and git reset --hard back to it (or cherry-pick the commit shas), with the explanation that committed work is reachable from the reflog and was not truly lost.",
+      "files": [],
+      "assertions": [
+        "Directs the user to git reflog to find the commit before the reset",
+        "Recovers by resetting (or branching/cherry-picking) back to the reflog sha",
+        "Explains that committed work is recoverable from the reflog, not truly lost",
+        "Does not claim the commits are unrecoverable"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "A commit I pushed to our shared main branch last week introduced a bug. I want to undo it. Should I reset main back past it and force-push?",
+      "expected_output": "Refuse the reset/force-push on shared main; use git revert to add an inverse commit instead, because others have already pulled the history.",
+      "files": [],
+      "assertions": [
+        "Recommends git revert instead of reset plus force-push",
+        "Explains that main is shared and rewriting it breaks everyone who pulled it",
+        "Does not suggest force-pushing a rewritten main",
+        "Mentions revert creates a new inverse commit that leaves history intact"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I'm four commits deep on my branch and just noticed the second commit is missing a null check. I want that fix to be part of that commit, not a new one on top. How do I do that?",
+      "expected_output": "The fixup + autosquash workflow: git commit --fixup <sha> for the second commit, then git rebase --autosquash, followed by --force-with-lease if the branch was already pushed.",
+      "files": [],
+      "assertions": [
+        "Uses git commit --fixup targeting the second commit's sha",
+        "Runs git rebase with --autosquash to fold the fixup in",
+        "If a force-push is mentioned, it is --force-with-lease rather than --force",
+        "Does not just add a separate 'fix null check' commit on top"
+      ]
+    }
+  ]
+}

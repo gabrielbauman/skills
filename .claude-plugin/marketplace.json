@@ -63,6 +63,15 @@
       "skills": ["./skills/error-handling"]
     },
     {
+      "name": "git-recovery",
+      "description": "Reshape and recover git history safely: interactive rebase to reorder, squash, split, and reword; fixup plus autosquash to amend an earlier commit; reset --soft/--mixed/--hard and when each is right; --force-with-lease over --force; the reflog as the undo of last resort; git revert for shared commits; and the non-interactive rebase alternatives for agent environments",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["git", "rebase", "version-control", "recovery"],
+      "skills": ["./skills/git-recovery"]
+    },
+    {
       "name": "pr-description",
       "description": "Write the PR description for the reviewer, not the machine: lead with what changed and why, give a reading order and the parts to scrutinize, flag the risky hunk, state what was left out of scope, and link the issue instead of retyping it",
       "source": "./",
