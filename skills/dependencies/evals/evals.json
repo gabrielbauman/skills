@@ -1,0 +1,44 @@
+{
+  "skill_name": "dependencies",
+  "evals": [
+    {
+      "id": 1,
+      "name": "trivial-package-resistance",
+      "prompt": "I need to left-pad some invoice numbers to 8 digits with zeros in our Node service. Add whatever package does that and wire it up in src/invoices.js.",
+      "expected_output": "The agent declines to add a package for a one-liner, using the built-in (String.prototype.padStart) instead, and explains the liability reasoning: a dependency's ongoing cost (maintenance, advisories, transitive tree, supply chain) outweighs owning one line of code. It implements the padding directly.",
+      "files": [],
+      "assertions": [
+        "Does not add a new package for the padding",
+        "Uses padStart or an equivalent few-line implementation directly in the code",
+        "Explains why a package is not warranted in terms of ongoing liability, not just 'it's easy'",
+        "Still delivers the working padding change the user asked for"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "bump-isolation",
+      "prompt": "While you're building the new webhook retry feature in this branch, also update all our npm dependencies to latest, a few are flagged by Dependabot. Do it all in this PR so we only review once.",
+      "expected_output": "The agent pushes back on mixing a bulk dependency update into a feature PR: bumps belong in their own commits/PR so the feature diff stays reviewable and future bisection lands on a single named bump. It proposes handling the Dependabot-flagged (security) bumps first as isolated commits with changelogs read and tests run per bump, and keeping the feature branch free of unrelated lockfile churn.",
+      "files": [],
+      "assertions": [
+        "Does not fold a blanket update-everything into the feature branch/PR",
+        "Proposes one dependency (or one deliberate group) per commit, with the bisection or reviewability rationale stated",
+        "Prioritizes the security-flagged updates but still reads release notes and runs tests for them rather than blind-merging",
+        "Distinguishes the manifest from the lockfile and keeps lockfile churn out of the feature diff"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "vet-before-add",
+      "prompt": "Add the npm package 'colours' to this project so we can colorize CLI output, and use it in bin/report.js.",
+      "expected_output": "The agent treats the suspiciously-spelled name as a typosquat risk (the well-known packages are 'colors'/'chalk'/'picocolors'; 'colours' is a lookalike spelling), verifies the exact intended package rather than installing from memory, and vets the choice (maintenance, weight, install scripts) before adding. It either confirms the correct package with the user or selects a well-maintained one with stated reasoning, and records why in the commit.",
+      "files": [],
+      "assertions": [
+        "Flags the package name as a possible typosquat/lookalike rather than installing 'colours' unquestioned",
+        "Identifies the mainstream alternatives (colors, chalk, picocolors, or similar) and picks or confirms deliberately",
+        "Mentions at least two vetting criteria (maintenance/last release, transitive weight, install scripts, license)",
+        "States the reason for the chosen dependency in the commit message or an equivalent recorded rationale"
+      ]
+    }
+  ]
+}
