@@ -1,0 +1,45 @@
+{
+  "skill_name": "logging",
+  "evals": [
+    {
+      "id": 1,
+      "name": "structured-and-actionable",
+      "prompt": "This log line isn't helping us during incidents. We can't filter it and when a charge fails we can't tell what happened. Improve it:\n\n```python\ndef charge(order, user):\n    try:\n        gateway.charge(order.id, order.amount_cents)\n    except GatewayError as e:\n        log.info(f\"charge for {user.email} failed on order {order.id}\")\n        raise\n```",
+      "expected_output": "The agent switches to structured key-value fields instead of an interpolated string, raises the level to ERROR (a failed charge needs action), includes the context needed to act (order id, the underlying reason/cause), and stops logging the user's email. It does not keep a prose message that can only be grepped.",
+      "files": [],
+      "assertions": [
+        "Uses structured key-value fields (e.g. order_id=..., reason=...) rather than an interpolated f-string message",
+        "Logs at ERROR rather than INFO, since a failed charge is something a human must act on",
+        "Includes the underlying cause/error so the operator can tell why the charge failed, not just that it did",
+        "Does not log the user's email (PII); if it correlates on the user at all it uses an id, not the address",
+        "Explains that an interpolated message is not queryable and that a bare 'failed' lacks the context to act"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "right-level-not-all-info",
+      "prompt": "Our production logs are unreadable, everything is INFO and the file scrolls forever. Here's a representative function. Fix the levels and the volume:\n\n```python\ndef handle_request(req):\n    log.info(\"entering handle_request\")\n    user = db.get_user(req.user_id)\n    log.info(f\"got user {req.user_id}\")\n    try:\n        val = cache.get(req.key)\n    except CacheMiss:\n        log.info(\"cache miss, recomputing\")\n        val = recompute(req.key)\n    log.info(f\"loop starting for {len(user.items)} items\")\n    for item in user.items:\n        log.info(f\"processing item {item.id}\")\n        process(item)\n    log.info(\"exiting handle_request\")\n    return val\n```",
+      "expected_output": "The agent removes the per-line entry/exit and per-item narration, demotes the diagnostic and normal-operation lines (cache miss) to DEBUG or drops them, and keeps only meaningful events. It does not leave a wall of INFO lines that narrate every step.",
+      "files": [],
+      "assertions": [
+        "Removes or demotes the function entry/exit and per-item 'processing item' narration rather than leaving them at INFO",
+        "Treats the cache miss as normal operation (DEBUG or nothing), not an INFO/WARN event",
+        "Ends up logging meaningfully fewer lines, keeping only boundary/state events rather than a line per source line",
+        "Explains that when every line is INFO the level carries no signal and real events drown"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "no-double-log-on-rethrow",
+      "prompt": "We get five ERROR lines in the logs for what turns out to be a single failure, which makes triage confusing. Clean up the logging in this call chain so one failure produces one log line:\n\n```python\ndef load(path):\n    try:\n        return parse(open(path).read())\n    except ParseError:\n        log.error(f\"load failed for {path}\")\n        raise\n\ndef import_config(path):\n    try:\n        return load(path)\n    except ParseError:\n        log.error(f\"import_config failed for {path}\")\n        raise\n\n@app.post(\"/import\")\ndef do_import():\n    try:\n        return import_config(request.json[\"path\"])\n    except ParseError as e:\n        log.error(f\"do_import failed\")\n        return Response(\"error\", status=500)\n```",
+      "expected_output": "The agent removes the log-and-rethrow lines from the lower layers so the error is logged once, at the boundary that actually handles it (the request handler), with the context (path, cause). It does not leave three ERROR lines for one failure.",
+      "files": [],
+      "assertions": [
+        "The lower layers (load, import_config) no longer log-and-rethrow; they let the exception propagate unlogged",
+        "The error is logged exactly once, at the boundary handler that decides the response",
+        "The single remaining log line carries the useful context (the path and/or the underlying cause), using structured fields",
+        "Explains that logging at every layer turns one failure into several near-identical lines and buries the real trace"
+      ]
+    }
+  ]
+}

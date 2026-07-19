@@ -81,6 +81,15 @@
       "skills": ["./skills/humanize"]
     },
     {
+      "name": "logging",
+      "description": "Write logs an operator can act on: match the level to the reader and the action (ERROR someone must act, WARN handled, INFO milestone, DEBUG diagnostic), prefer structured key-value fields over interpolated strings so logs are queryable, log the ids and inputs and attempt needed to act instead of a bare 'failed', never log secrets or PII, log at boundaries and state transitions not every line, and do not log-and-rethrow the same error at every layer",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["logging", "observability", "operations", "code-quality"],
+      "skills": ["./skills/logging"]
+    },
+    {
       "name": "naming",
       "description": "Name variables, functions, types, and files for intent and role, not implementation or type: replace vague fillers (data, temp, handle), drop noise words (Manager, Helper, Util), strip type-restating and Hungarian suffixes, make booleans read as predicates, scale name length to scope, and match the codebase's conventions",
       "source": "./",
