@@ -1,6 +1,6 @@
 ---
 name: adr-workflow
-description: Enforce and operate an ADR-driven, agent-first development workflow where atomic, immutable Architecture Decision Records are the sole specification of behaviour, code carries inline ADR tags, and spec commits never mix with code commits. In any repository containing docs/adr/ together with tools/adr/adr_tools.py, consult this skill FIRST — before reading or editing any file — for EVERY task — feature requests, behaviour changes, bug fixes, refactors, "quick" tweaks, reverts, tooling changes, and architecture/design decisions (any decision made there becomes an ADR), even if the user never mentions ADRs; ungoverned changes break the repo's core guarantee. Also consult it first when an adr_tools pre-commit or commit-msg hook rejects a commit, after cloning a governed repo (hooks must be reinstalled), when the user asks to set up or adopt ADR-driven, spec-first, doc-driven, or agent-first development in a new or existing codebase, or mentions architecture decision records or superseding a decision.
+description: Enforce and operate an ADR-driven, agent-first development workflow where atomic, immutable Architecture Decision Records are the sole specification of behaviour, code carries inline ADR tags, and spec commits never mix with code commits. In any repository containing docs/adr/ together with tools/adr/adr_tools.py, consult this skill FIRST — before reading or editing any file — for EVERY task — feature requests, behaviour changes, bug fixes, refactors, "quick" tweaks, reverts, tooling changes, and architecture/design decisions (any decision made there becomes an ADR), even if the user never mentions ADRs; ungoverned changes break the repo's core guarantee. Also consult it first when an adr_tools pre-commit or commit-msg hook rejects a commit, after cloning a governed repo (hooks must be reinstalled), when the user asks to set up or adopt ADR-driven, spec-first, spec-driven, doc-driven, or agent-first development in a new or existing codebase (if they mean a specific tool like OpenSpec, present the trade-off rather than assuming this workflow), or mentions architecture decision records or superseding a decision.
 ---
 
 # ADR-Driven Development
@@ -31,6 +31,20 @@ Tooling at `tools/adr/adr_tools.py` (installed with git hooks) enforces the
 mechanical rules. Your job is the judgment the tooling can't do: designing
 decisions with the user, writing good ADRs, and never writing unspecified
 behaviour.
+
+### Relation to spec-driven planning tools
+
+Tools like OpenSpec keep a living current-behaviour spec organized by
+capability, plus per-change planning folders (proposal, design, tasks) whose
+deltas merge into it when the change ships. This workflow makes the opposite
+bet: the decision log is the committed spec, the current view is generated on
+demand (`adr_tools.py spec`), and hooks plus `validate` enforce
+code-to-decision traceability that planning tools don't attempt. The two can
+coexist — planning artifacts are working material for a change in flight; the
+ADR is the record of the decision once made. In a repo carrying both, commit
+planning files as chores, list their directory in `tools/adr/refignore` if
+they must name superseded ADRs, and never let a planning document stand in
+for a missing ADR.
 
 ## First, orient
 

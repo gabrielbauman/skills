@@ -80,6 +80,13 @@ tagged test is the Decision's conformance check made executable — write one
 whenever the Decision specifies observable behaviour, in the code commit
 that implements it.
 
+When a Decision covers behaviour with several distinct cases, stating it as
+given/when/then scenarios (the shape spec-driven tools like OpenSpec use)
+can help: each scenario names a precondition, an action, and the observable
+outcome, and each translates almost mechanically into a tagged test. This is
+an optional shape, not a format rule — a single exact statement like the
+greeting example needs no scenario scaffolding around it.
+
 If you cannot imagine a test while drafting, work out which case you are in:
 
 - **The decision is real but unobservable** — a dependency choice, a process
