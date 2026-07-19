@@ -1,0 +1,42 @@
+{
+  "skill_name": "pr-description",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just finished a branch that adds per-tenant rate limiting to our public API: a token-bucket limiter, one middleware in front of the mux returning 429s, and I dropped the old per-handler checks from 9 handlers. The limiter keeps state in memory so it resets on deploy. Admin visibility into usage is a separate ticket I didn't touch. Write the PR description.",
+      "expected_output": "A description that leads with the problem and why the change is needed, gives a reading order that points at the limiter core as the load-bearing file and marks the 9 handler edits as mechanical to skim, flags the in-memory-state reset-on-deploy limitation as a risk, states admin visibility as out of scope, and does not just restate the file list.",
+      "files": [],
+      "assertions": [
+        "Opens with what changed and why (the problem being solved), not a list of files or classes added",
+        "Gives the reviewer a reading order or points at which part to focus on versus which to skim",
+        "Explicitly flags the in-memory state resetting on deploy as a risk or limitation, not buried",
+        "States the admin-visibility work as deliberately out of scope",
+        "Does not restate the diff as prose (e.g. a bare 'Added X, Updated Y' bullet list) and avoids inflated words like robust or comprehensive"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Here's my PR description, does it look good?\n\n---\nUpdate uploader\n\nChanges:\n- Added backoff.go\n- Modified s3.go\n- Added tests\n\nVarious improvements to make uploads more robust.",
+      "expected_output": "The agent identifies that this description restates the file list, says nothing about why the change exists, gives no reading order or risk, and uses an empty inflated claim (robust). It rewrites it to lead with the problem and behavior change, and adds the missing why.",
+      "files": [],
+      "assertions": [
+        "Points out that the body just restates the diff / file list and adds no information a reviewer lacks",
+        "Flags 'various improvements to make uploads more robust' as an empty inflated claim, not a description",
+        "Notes the missing why (what problem the retry solves) and/or missing risk and reading guidance",
+        "Provides a rewrite that leads with the motivation and the actual behavior change rather than the changed filenames"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write the PR description for this fix. It closes issue #337. The change fixes an off-by-one in the pagination cursor in api/list.go so the last item on each page is no longer skipped, plus a regression test.",
+      "expected_output": "A short description proportional to a small fix: says what was wrong and what the fix does, links the issue with an auto-close keyword, and does not pad with a fabricated reading order or risk section the change does not warrant.",
+      "files": [],
+      "assertions": [
+        "States the actual bug (last item on each page skipped) and what the fix does, not just 'fixes off-by-one'",
+        "Links issue #337 with an auto-closing keyword (e.g. Closes #337 or Fixes #337)",
+        "Stays proportional to a one-line fix and does not invent an elaborate reading order or risk disclaimer the change does not need",
+        "Does not merely paste the issue link in place of describing the change"
+      ]
+    }
+  ]
+}

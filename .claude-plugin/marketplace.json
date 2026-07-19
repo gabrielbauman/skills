@@ -54,6 +54,15 @@
       "skills": ["./skills/debugging"]
     },
     {
+      "name": "pr-description",
+      "description": "Write the PR description for the reviewer, not the machine: lead with what changed and why, give a reading order and the parts to scrutinize, flag the risky hunk, state what was left out of scope, and link the issue instead of retyping it",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["git", "pull-requests", "review", "documentation", "workflow"],
+      "skills": ["./skills/pr-description"]
+    },
+    {
       "name": "humanize",
       "description": "Write prose that reads like a person wrote it and strip AI tells from existing text: em-dash addiction, negative parallelism, inflated vocabulary, bold-first bullets, manufactured drama",
       "source": "./",
