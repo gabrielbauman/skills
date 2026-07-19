@@ -54,6 +54,15 @@
       "skills": ["./skills/debugging"]
     },
     {
+      "name": "error-handling",
+      "description": "Handle errors so failures are loud, actionable, and traceable: fail early instead of limping on bad state, never swallow an exception silently, write messages that name what was attempted with which inputs, preserve the underlying cause when rethrowing, catch at the boundary that can act, choose retry vs propagate vs crash, and never leak secrets or internals to users",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["error-handling", "exceptions", "code-quality", "reliability"],
+      "skills": ["./skills/error-handling"]
+    },
+    {
       "name": "pr-description",
       "description": "Write the PR description for the reviewer, not the machine: lead with what changed and why, give a reading order and the parts to scrutinize, flag the risky hunk, state what was left out of scope, and link the issue instead of retyping it",
       "source": "./",
