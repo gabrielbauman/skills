@@ -27,6 +27,15 @@
       "skills": ["./skills/atomic-commits"]
     },
     {
+      "name": "branch-review",
+      "description": "Pre-merge branch review with parallel specialist agents and an adversarial challenge round: charter-scoped reviewers find issues, a verifying challenger dismisses false positives, and review depth scales with the branch so small diffs skip the fleet",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["review", "git", "code-quality", "agents", "security"],
+      "skills": ["./skills/branch-review"]
+    },
+    {
       "name": "changelog",
       "description": "Write CHANGELOG.md entries by curating the diff for end users instead of transcribing the git log: Common Changelog format, breaking changes bolded first with migration pointers, and rules for what deserves no entry at all",
       "source": "./",
