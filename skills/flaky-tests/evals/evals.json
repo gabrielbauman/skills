@@ -1,0 +1,47 @@
+{
+  "skill_name": "flaky-tests",
+  "evals": [
+    {
+      "id": 1,
+      "name": "timeout-widening-resistance",
+      "prompt": "test_export_completes fails maybe once in twenty CI runs with 'AssertionError: status == \"done\" expected, got \"running\"'. The test starts an export job, does time.sleep(3), then asserts the status. It always passes locally. Just bump the sleep to 10 seconds so CI stops bothering us.",
+      "expected_output": "The agent declines to just widen the sleep: the sleep is a guess about timing, and widening it lowers frequency without fixing the mechanism while slowing every run. It replaces the sleep with a condition wait (poll job status with a generous deadline), notes the deadline is then only hit on real failure, and verifies with a counted loop (e.g. run the test N times) that the flake is gone rather than declaring victory on one green run.",
+      "files": [],
+      "assertions": [
+        "Does not simply increase the sleep as the fix",
+        "Explains why widening the margin fails (still a guess; fails on slow days; slows every run)",
+        "Replaces the fixed sleep with a poll/wait on the actual job status with a deadline",
+        "Proposes verifying with a repeated/counted run, not a single pass",
+        "Connects only-in-CI behavior to the environment difference (slower machines) rather than treating CI as haunted"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "order-dependence-diagnosis",
+      "prompt": "test_user_count in tests/test_reports.py asserts we have exactly 3 users and fails intermittently in CI, but passes every time when I run it by itself locally. CI runs the suite with pytest -n 4. Figure out what's going on and fix it.",
+      "expected_output": "The agent recognizes the solo-pass/suite-fail signature as state coupling: other tests create or leak user rows, and parallel workers share the database. It reproduces by running the test after the suite or under -n 4, identifies the shared-state mechanism, and fixes by isolating state (per-test transactions/fixtures, unique data, or asserting on data the test itself created rather than a global count). It does not fix by reordering tests or retrying.",
+      "files": [],
+      "assertions": [
+        "Identifies solo-pass/suite-fail plus parallelism as shared-state or test-order coupling, naming the leaked-users mechanism",
+        "Proposes reproducing under the failing conditions (full suite and/or -n 4), not just solo",
+        "The fix isolates test state (transactions, fresh fixtures, unique ids, or scoping the assertion to the test's own data) rather than asserting a global count",
+        "Does not propose auto-retry, test reordering, or marking the test to run first as the fix",
+        "Notes the underlying rule: a test that only passes in a particular order or alone is a bug even while green"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "flake-as-real-race",
+      "prompt": "test_concurrent_withdrawals fails about 1 time in 30. It spins up two threads that each withdraw 60 from an account holding 100, then asserts the balance never goes negative. Devs are sick of it; add it to our retry list (we rerun failed tests up to 3 times) or delete it, your call.",
+      "expected_output": "The agent recognizes this as the jackpot case: the test is intermittently observing a real race in the withdrawal code (two threads both passing the balance check before either debits). Retrying or deleting silences a genuine bug report and ships the race. It investigates the withdrawal path for the missing lock/atomicity, fixes the product code (or reports the race precisely), and keeps the test, verifying with a counted loop that failures go to zero.",
+      "files": [],
+      "assertions": [
+        "Refuses both offered dispositions (retry list and deletion) and says why: the flake is evidence of a product race, not test noise",
+        "Names the race mechanism: both threads read/check the balance before either write commits (check-then-act without atomicity/locking)",
+        "Directs the fix at the withdrawal code (locking, atomic update, or serializable transaction), not at the test",
+        "Verifies with a repeated run count that the failure rate drops to zero after the fix",
+        "Notes that auto-retry policies hide exactly this class of bug"
+      ]
+    }
+  ]
+}
