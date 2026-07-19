@@ -1,0 +1,48 @@
+{
+  "skill_name": "branch-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "tier-scaling-down",
+      "prompt": "I'm on branch docs/clarify-retry-semantics. It changes 40 lines across README.md and docs/retries.md: fixes two typos and rewords the section on retry backoff. Give it a full branch review against main before I merge.",
+      "expected_output": "The agent fetches origin/main, diffs against origin/main...HEAD, recognizes a small docs-only branch, and picks the light tier: it reviews the diff itself against the charters (docs accuracy especially, e.g. whether the reworded backoff section still matches the code) instead of spawning specialist agents, challenges its own findings, and produces the report noting the tier and why. It does not fix anything unprompted.",
+      "files": [],
+      "assertions": [
+        "Diffs against origin/main (after a fetch attempt), not the local main ref",
+        "Does not spawn specialist subagents or a challenger agent for this 40-line docs-only branch",
+        "Explicitly states the light tier was chosen and why",
+        "Still reviews substance, e.g. checks the reworded retry-backoff prose against what the code actually does, rather than only proofreading",
+        "Delivers a report and does not start editing files to fix findings unprompted"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "full-fleet-without-diff-duplication",
+      "prompt": "Review branch feature/session-tokens against main before merge. It's about 1400 changed lines across 23 files: a new token-issuing endpoint in the API crate, storage changes, and config plumbing. Be thorough.",
+      "expected_output": "The agent picks the deep tier (size plus auth-adjacent surface), dispatches the specialists in parallel in a single message, and each specialist prompt lists that agent's purview files and instructs it to pull its own scoped diff from the repo rather than receiving the full 1400-line diff pasted in. The orchestrator checks commit hygiene itself from the log. HIGH/MEDIUM findings go to a challenger before the report; every surviving HIGH carries a citation.",
+      "files": [],
+      "assertions": [
+        "Chooses the deep tier and justifies it by branch size and the security-sensitive (token/auth) surface",
+        "Dispatches the specialist agents in parallel (one message), not sequentially",
+        "Specialist prompts instruct agents to run git diff scoped to their purview paths themselves; the full diff is not pasted into every agent prompt",
+        "Commit-history hygiene is checked by the orchestrator directly, not delegated to a dedicated agent",
+        "HIGH and MEDIUM findings pass through a challenger agent before the final report; LOW findings are not sent to the challenger",
+        "Every HIGH in the final report cites a violated written rule or concrete defect evidence; the report states the tier and groups findings HIGH/MEDIUM/LOW"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "challenger-discipline",
+      "prompt": "You're running the challenge round of a branch review on branch fix/upload-limits (diff is available via git). Here are the Phase 1 findings:\n\n1. [HIGH] Missing size check on upload handler - api/upload.go:88 - request body read without a limit, memory exhaustion risk - no citation given\n2. [MEDIUM] parse_limit ignores errors - config/limits.go:41 - returned error discarded, falls back to zero silently\n3. [HIGH] New endpoint lacks auth - api/upload.go:52 - handler registered without middleware - violates SECURITY.md section 'All endpoints authenticate'\n4. [MEDIUM] No test for the new 413 response path - api/upload_test.go - changed failure path unreached\n\nRun the challenge round and produce the final report.",
+      "expected_output": "The agent challenges each finding by checking the repo, not by rhetoric. Finding 1, a HIGH with no citation, is either downgraded to MEDIUM or sustained as HIGH only with a citation the challenger supplies itself. Any DISMISS verdict cites what was verified in the tree (e.g. a middleware wrapper found at a specific file:line); a dismissal hypothesis that cannot be verified from the repo becomes DOWNGRADE instead. The final report preserves finding numbers, sorts by severity, and lists dismissals with reasons.",
+      "files": [],
+      "assertions": [
+        "Verdicts are grounded in checking the actual repo (grep/read of the relevant files), not in plausibility arguments alone",
+        "Finding 1 is not left as HIGH without a citation: it is downgraded to MEDIUM, or sustained as HIGH with a concrete citation the challenger itself supplies",
+        "Every DISMISS names what was checked and where (file:line or doc section); no dismissal rests on an unverified hypothesis",
+        "If a dismissal hypothesis could not be verified against the repo, the verdict is DOWNGRADE rather than DISMISS",
+        "The final report drops dismissed findings from the severity tiers but lists them in a dismissed section with one-line reasons"
+      ]
+    }
+  ]
+}
