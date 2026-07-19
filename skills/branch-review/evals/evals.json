@@ -4,44 +4,47 @@
     {
       "id": 1,
       "name": "tier-scaling-down",
-      "prompt": "I'm on branch docs/clarify-retry-semantics. It changes 40 lines across README.md and docs/retries.md: fixes two typos and rewords the section on retry backoff. Give it a full branch review against main before I merge.",
-      "expected_output": "The agent fetches origin/main, diffs against origin/main...HEAD, recognizes a small docs-only branch, and picks the light tier: it reviews the diff itself against the charters (docs accuracy especially, e.g. whether the reworded backoff section still matches the code) instead of spawning specialist agents, challenges its own findings, and produces the report noting the tier and why. It does not fix anything unprompted.",
-      "files": [],
+      "prompt": "This repo is checked out on branch docs/clarify-retry-semantics, which fixes typos and rewords the retry documentation. Run a branch review against main before I merge.",
+      "expected_output": "The agent fetches origin/main, diffs against origin/main...HEAD, recognizes a small docs-only branch, and picks the light tier: it reviews the diff itself against the charters instead of spawning specialist agents, checks the reworded docs against src/retry.py, and catches at least one of the seeded drifts (docs claim a 30s backoff cap while the code caps at 60s; docs claim any failed call is retried while the code retries only ConnectionError/TimeoutError). It challenges its own findings and produces the report noting the tier and why, without fixing anything unprompted.",
+      "files": ["fixtures/docs-branch"],
       "assertions": [
         "Diffs against origin/main (after a fetch attempt), not the local main ref",
-        "Does not spawn specialist subagents or a challenger agent for this 40-line docs-only branch",
+        "Does not spawn specialist subagents or a challenger agent for this small docs-only branch",
         "Explicitly states the light tier was chosen and why",
-        "Still reviews substance, e.g. checks the reworded retry-backoff prose against what the code actually does, rather than only proofreading",
+        "Checks the reworded docs against src/retry.py and reports at least one seeded drift: the 30s vs 60s backoff cap, or the claim that any failure is retried when only ConnectionError/TimeoutError are",
         "Delivers a report and does not start editing files to fix findings unprompted"
       ]
     },
     {
       "id": 2,
       "name": "full-fleet-without-diff-duplication",
-      "prompt": "Review branch feature/session-tokens against main before merge. It's about 1400 changed lines across 23 files: a new token-issuing endpoint in the API crate, storage changes, and config plumbing. Be thorough.",
-      "expected_output": "The agent picks the deep tier (size plus auth-adjacent surface), dispatches the specialists in parallel in a single message, and each specialist prompt lists that agent's purview files and instructs it to pull its own scoped diff from the repo rather than receiving the full 1400-line diff pasted in. The orchestrator checks commit hygiene itself from the log. HIGH/MEDIUM findings go to a challenger before the report; every surviving HIGH carries a citation.",
-      "files": [],
+      "prompt": "This repo is checked out on branch feature/session-tokens: it adds an API-token issuing endpoint, storage changes, and new tests. I know the branch is small, but it touches auth and this is exactly the kind of change that has burned us before, so I want the full specialist fleet: run a deep-tier branch review against main before merge.",
+      "expected_output": "The agent honors the explicit fleet request (the skill's tier override: a user asking for the fleet wins even on a small branch), dispatches the specialists in parallel in a single message, and each specialist prompt scopes purview files and instructs pulling its own diff from the repo rather than pasting the full diff into every prompt. The orchestrator checks commit hygiene itself from the log (finding the vague bundled 'add tokens'/'wip' commits and the committed debug print). HIGH/MEDIUM findings go through a challenger before the report. The report includes the token-logging HIGH citing SECURITY.md and the TTL unit bug (TOKEN_TTL_HOURS added to epoch seconds, 24s vs the README's promised 24h); the missing-auth-on-/tokens false positive is either never raised or dismissed with a citation of Router.add_route's auth-by-default.",
+      "files": ["fixtures/token-endpoint-branch"],
       "assertions": [
-        "Chooses the deep tier and justifies it by branch size and the security-sensitive (token/auth) surface",
-        "Dispatches the specialist agents in parallel (one message), not sequentially",
-        "Specialist prompts instruct agents to run git diff scoped to their purview paths themselves; the full diff is not pasted into every agent prompt",
-        "Commit-history hygiene is checked by the orchestrator directly, not delegated to a dedicated agent",
-        "HIGH and MEDIUM findings pass through a challenger agent before the final report; LOW findings are not sent to the challenger",
-        "Every HIGH in the final report cites a violated written rule or concrete defect evidence; the report states the tier and groups findings HIGH/MEDIUM/LOW"
+        "Runs the deep tier with specialist subagents, honoring the explicit user request rather than downgrading to a solo review because the branch is small",
+        "Dispatches the specialist agents in parallel, not one at a time sequentially",
+        "Specialist prompts instruct agents to pull their own scoped diff from the repo; the orchestrator does not paste the full branch diff into every specialist prompt",
+        "Commit-history hygiene is checked by the orchestrator directly (the vague bundled 'add tokens'/'wip' commits or the committed DEBUG print are flagged), not delegated to a dedicated history agent",
+        "HIGH and MEDIUM findings pass through a challenger agent before the final report",
+        "The report includes the token value being logged as a HIGH citing SECURITY.md's 'never log token values' rule",
+        "The report includes the TTL unit bug (TOKEN_TTL_HOURS added directly to epoch seconds, so tokens expire in 24 seconds while the README promises 24 hours)",
+        "No surviving finding claims /tokens lacks authentication; if raised in Phase 1, it is dismissed with a citation of Router.add_route wrapping non-public handlers in auth",
+        "The final report states the tier, groups findings by severity, and every HIGH carries a citation"
       ]
     },
     {
       "id": 3,
       "name": "challenger-discipline",
-      "prompt": "You're running the challenge round of a branch review on branch fix/upload-limits (diff is available via git). Here are the Phase 1 findings:\n\n1. [HIGH] Missing size check on upload handler - api/upload.go:88 - request body read without a limit, memory exhaustion risk - no citation given\n2. [MEDIUM] parse_limit ignores errors - config/limits.go:41 - returned error discarded, falls back to zero silently\n3. [HIGH] New endpoint lacks auth - api/upload.go:52 - handler registered without middleware - violates SECURITY.md section 'All endpoints authenticate'\n4. [MEDIUM] No test for the new 413 response path - api/upload_test.go - changed failure path unreached\n\nRun the challenge round and produce the final report.",
-      "expected_output": "The agent challenges each finding by checking the repo, not by rhetoric. Finding 1, a HIGH with no citation, is either downgraded to MEDIUM or sustained as HIGH only with a citation the challenger supplies itself. Any DISMISS verdict cites what was verified in the tree (e.g. a middleware wrapper found at a specific file:line); a dismissal hypothesis that cannot be verified from the repo becomes DOWNGRADE instead. The final report preserves finding numbers, sorts by severity, and lists dismissals with reasons.",
-      "files": [],
+      "prompt": "You're mid branch-review on this repo, which is checked out on branch fix/upload-limits (base: main). Phase 1 specialists returned these findings:\n\n1. [HIGH] Unbounded request body read - api/upload.py:7 - request body is read fully into memory before the size check, memory exhaustion risk - no citation given\n2. [MEDIUM] max_upload_bytes swallows parse errors - config/limits.py:12 - a malformed MAX_UPLOAD_BYTES silently becomes a limit of 0, rejecting every upload\n3. [HIGH] /upload endpoint lacks authentication - api/upload.py:6 - handler performs no session check - violates SECURITY.md 'All endpoints authenticate'\n4. [MEDIUM] No test for the 413 response path - tests/test_upload.py - the new failure branch is unreached\n\nRun the challenge round and produce the final report.",
+      "expected_output": "The agent runs the challenge round grounded in the repo, not rhetoric. Finding 3 is dismissed with a citation: App.register wraps every handler in middleware.wrap, which authenticates, so the handler needs no inline session check. Finding 1, a HIGH with no citation, is downgraded to MEDIUM or sustained as HIGH only with concrete evidence supplied (the unbounded read at api/upload.py:7 as a demonstrable defect). Findings 2 and 4 are sustained after verification. The final report preserves finding numbers, sorts survivors by severity, and lists the dismissal with its reason.",
+      "files": ["fixtures/upload-limits-branch"],
       "assertions": [
-        "Verdicts are grounded in checking the actual repo (grep/read of the relevant files), not in plausibility arguments alone",
-        "Finding 1 is not left as HIGH without a citation: it is downgraded to MEDIUM, or sustained as HIGH with a concrete citation the challenger itself supplies",
-        "Every DISMISS names what was checked and where (file:line or doc section); no dismissal rests on an unverified hypothesis",
-        "If a dismissal hypothesis could not be verified against the repo, the verdict is DOWNGRADE rather than DISMISS",
-        "The final report drops dismissed findings from the severity tiers but lists them in a dismissed section with one-line reasons"
+        "Verdicts are grounded in reading the actual repo (e.g. api/app.py and api/middleware.py are opened), not in plausibility arguments alone",
+        "Finding 3 is dismissed, citing App.register/middleware.wrap applying session auth to every handler; it does not survive into the report's severity tiers",
+        "Finding 1 is not left as an uncited HIGH: it is downgraded to MEDIUM, or sustained as HIGH with concrete evidence or a citation supplied by the challenger",
+        "Findings 2 and 4 are sustained after checking the code, not dismissed",
+        "The final report drops the dismissed finding from the severity tiers but lists it in a dismissed section with a one-line reason"
       ]
     }
   ]
