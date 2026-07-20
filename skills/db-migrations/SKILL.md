@@ -73,8 +73,8 @@ plausible). Say in the migration's comment what confirmed the field is
 unused; "grep found nothing" is a real answer, "should be fine" is
 not.
 
-Write down migrations where they are cheap (a dropped index, an added
-nullable column) because they make rollback mechanical. Where the
+Write the down migration where it is cheap (a dropped index, an added
+nullable column) because it makes rollback mechanical. Where the
 migration is genuinely irreversible, say so explicitly in the
 migration instead of writing a down that pretends (restoring a dropped
 column with null data is not a rollback, it is a second incident).
