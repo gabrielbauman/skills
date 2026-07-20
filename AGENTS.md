@@ -32,11 +32,15 @@ dashes, no filler, bodies as short why-focused paragraphs.
    checks plus a skills.sh discovery test, and lints PR commit subjects for
    the scoped format.
 
-Skill text conventions: the description carries the triggering (what the
-skill does, when to use it, what it covers) and ends with pairing notes
-pointing at sibling skills where they overlap; add the reverse pointer in
-the sibling. Bodies run roughly 100-250 lines, open by naming the failure
-mode the skill exists to correct, and give each rule with its reason, with
+Skill text conventions: the description carries only the triggering (what
+the skill does and when to use it) and stays under roughly 600 characters.
+Descriptions load into every session before any skill fires, so detail
+belongs in the body, which loads only after the skill triggers; do not
+summarize the body's rules in the description. Add a short pairing note
+only where a sibling skill competes for the same trigger and the model
+needs help routing, as a terse parenthetical gloss; one direction is
+enough. Bodies run roughly 100-250 lines, open by naming the failure mode
+the skill exists to correct, and give each rule with its reason, with
 concrete before/after examples over abstract restatements.
 
 ## Prose style
