@@ -1,0 +1,47 @@
+{
+  "skill_name": "api-design",
+  "evals": [
+    {
+      "id": 1,
+      "name": "in-place-rename-resistance",
+      "prompt": "Our public REST API returns `name` in GET /users/{id}. Product wants it called `full_name` to match the mobile app's wording. Rename the field in the API response and update the docs.",
+      "expected_output": "The agent identifies the rename as a breaking change for deployed consumers and refuses to do it in place. It proposes the additive path: add full_name alongside name, deprecate name visibly with a sunset date (docs, changelog, deprecation signal), migrate consumers while watching usage, and remove name only later in its own change once usage evidence supports it.",
+      "files": [],
+      "assertions": [
+        "Does not simply rename the field in place; identifies the in-place rename as a breaking change for consumers that deploy on their own schedule",
+        "Proposes adding full_name alongside name so both are served during the transition",
+        "Proposes a visible deprecation of name (docs, changelog, or a deprecation header/marker) with a stated sunset or removal date",
+        "Makes removal of name a separate, later step gated on evidence of migration (usage telemetry or the announced sunset passing), not part of the initial change",
+        "Does not reach for a new API version (v2) when the additive add-and-deprecate path suffices"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "tightened-validation-review",
+      "prompt": "Quick review before I ship this API change: (1) `phone` on POST /signup becomes required, it was optional; (2) we now reject requests containing unknown fields to keep payloads clean; (3) error responses switch from plain-text 400 bodies to a structured JSON body. All three are improvements, right?",
+      "expected_output": "The agent flags all three as breaking changes for existing consumers: making an optional field required rejects previously valid requests, rejecting unknown fields breaks callers that were sending extras harmlessly, and changing the error body shape breaks anything parsing the old text. It explains why 'more correct' does not mean 'safe to ship', and proposes a migration path for each (e.g. accept-then-warn before enforcing, announce and stage the enforcement, serve the new error format additively or behind a version/negotiation with notice) rather than shipping all three at once.",
+      "files": [],
+      "assertions": [
+        "Flags making `phone` required as a breaking change: requests that succeeded yesterday would be rejected",
+        "Flags rejecting unknown fields as a breaking change for callers that already send extra fields, even though stricter validation looks like an improvement",
+        "Flags the error body format change as breaking for consumers that parse the current plain-text responses",
+        "Explains the underlying rule: tightening what the API accepts, or changing what consumers have observed, breaks unchanged callers even when the new behavior is more correct",
+        "Proposes a staged or additive migration path (such as warn-before-enforce, announced deprecation windows, or versioned rollout) instead of approving all three changes shipping at once"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "consumer-first-endpoint-design",
+      "prompt": "Design a JSON API endpoint for listing a customer's invoices. We have an `invoices` table with columns id, cust_ref, amt_cents, state_enum, created_ts. Fastest path is to just serialize the rows as-is, so do that.",
+      "expected_output": "The agent pushes back on mirroring the table into the contract, designing the response around the caller instead: clean field names decoupled from column names, RFC 3339 timestamps, a documented representation for amounts and states, pagination from day one (because adding it later changes the response shape and breaks consumers), and a structured error contract. It explains that leaking storage shape welds the schema to the API so neither can change independently.",
+      "files": [],
+      "assertions": [
+        "Does not serialize the table rows as-is; explains that mirroring storage into the contract means future schema changes become API breaking changes",
+        "Includes pagination in the initial design and justifies it: retrofitting pagination changes the response shape, which breaks existing consumers",
+        "Renames raw column artifacts (cust_ref, amt_cents, state_enum, created_ts) into consumer-facing fields with documented formats, including a standard timestamp format such as RFC 3339",
+        "Defines an error contract for the endpoint (machine-readable code plus human message) rather than leaving errors unspecified",
+        "Addresses how response enums or states are handled so future values do not break consumers (documenting values and telling clients to tolerate unknown ones, or an equivalent)"
+      ]
+    }
+  ]
+}
