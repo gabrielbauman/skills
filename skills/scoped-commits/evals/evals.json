@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "I've staged some changes in this repo that add input validation to the login handler in internal/auth/. The repo's git log shows subjects like 'storage: retry uploads on transient errors' and 'auth: add token refresh'. Please commit the staged changes with an appropriate message.",
-      "expected_output": "A commit with subject like 'auth: validate login input' — scope-first, imperative, lowercase after colon, no Conventional Commits type prefix.",
+      "expected_output": "A commit with subject like 'auth: validate login input': scope-first, imperative, lowercase after colon, no Conventional Commits type prefix.",
       "files": [],
       "assertions": [
         "Commit subject matches the pattern '<scope>: <description>'",

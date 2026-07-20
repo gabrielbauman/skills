@@ -19,7 +19,7 @@ particular area:
   fast.
 
 Leading with the scope makes every one of these scans cheaper. This is why the
-highest-traffic projects in the industry — Linux, FreeBSD, Git, Go, nixpkgs —
+highest-traffic projects in the industry (Linux, FreeBSD, Git, Go, nixpkgs)
 independently converged on it.
 
 ## Why not Conventional Commits
@@ -36,7 +36,7 @@ harmful"](https://richvdh.org/conventional-commits-considered-harmful.html), and
   obviously fixes something). "A commit without a scope is like a sentence
   without a subject."
 - **Type prefixes waste the subject line.** A prefix like
-  `chore(dowhacky-controller):` burns ~30 of your ~50–72 characters before the
+  `chore(dowhacky-controller):` burns ~30 of your ~50-72 characters before the
   message starts.
 - **"chore" devalues real work.** Labeling cleanup, tooling, and documentation as
   chores frames essential maintenance as boring or unpleasant.
@@ -61,15 +61,15 @@ codebases:
 - Linux: [Submitting patches](https://www.kernel.org/doc/html/v4.14/process/submitting-patches.html)
 - FreeBSD: [Writing commit messages](https://freebsdfoundation.org/wp-content/uploads/2020/11/Writing-Commit-Messages.pdf)
 - Git: [SubmittingPatches](https://git-scm.com/docs/SubmittingPatches)
-- Go: [Commit messages wiki](https://go.dev/wiki/CommitMessage) — the source of
+- Go: [Commit messages wiki](https://go.dev/wiki/CommitMessage), the source of
   the "this change modifies Go to ___" imperative-mood test, lowercase-after-
   colon, no trailing period, ~72-character wrap.
-- nixpkgs: [CONTRIBUTING.md](https://github.com/NixOS/nixpkgs/blob/master/CONTRIBUTING.md)
-  — the source of the `pkg: 1.0 -> 1.1` version-bump form and `treewide:` scope.
+- nixpkgs: [CONTRIBUTING.md](https://github.com/NixOS/nixpkgs/blob/master/CONTRIBUTING.md),
+  the source of the `pkg: 1.0 -> 1.1` version-bump form and `treewide:` scope.
 
 ## What the standard deliberately leaves open
 
 Scoped Commits specifies only the shape (`scope: description`, optional body and
 trailers). Capitalization, tense, punctuation, subject length, and the set of
-valid scopes are left to each project — which is why matching the existing log
+valid scopes are left to each project, which is why matching the existing log
 always takes precedence over any default in this skill.
