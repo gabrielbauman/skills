@@ -18,6 +18,15 @@
       "skills": ["./skills/adr-workflow"]
     },
     {
+      "name": "api-design",
+      "description": "Design and evolve APIs without breaking deployed consumers: what counts as a breaking change, additive evolution with deprecate-then-remove, versioning as a last resort, and consumer-first endpoint design with pagination and an error contract from day one",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["api", "rest", "compatibility", "versioning", "design"],
+      "skills": ["./skills/api-design"]
+    },
+    {
       "name": "atomic-commits",
       "description": "Decide what each git commit should contain: one self-contained, reviewable change per commit, splitting a mixed working tree into an ordered series with git add -p instead of one everything-commit",
       "source": "./",
@@ -151,6 +160,15 @@
       "category": "workflow",
       "tags": ["performance", "profiling", "optimization", "benchmarking", "code-quality"],
       "skills": ["./skills/performance"]
+    },
+    {
+      "name": "reading-code",
+      "description": "Understand unfamiliar code before changing it: orient from entry points, trace real call paths instead of trusting grep hits, read tests as the intent spec, recover intent from git history, find the codebase's existing way first, and verify your model before editing on it",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["reading", "codebase", "comprehension", "onboarding", "git"],
+      "skills": ["./skills/reading-code"]
     },
     {
       "name": "refactoring",
