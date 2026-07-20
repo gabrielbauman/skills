@@ -7,7 +7,7 @@
       "prompt": "This is a brand-new, empty git repository for a small Python CLI called `greet`. I want this project to follow strict ADR-driven development from day one — set that up, then implement the first feature: `greet NAME` prints `Hello, NAME!`.",
       "expected_output": "Governed repo: docs/adr with ADR-0001 (workflow adoption) and an ADR specifying the greeting; hooks installed; spec commits precede code commits; no mixed commits; code tagged with ADR ids; greet works.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "docs/adr/ exists with >=2 well-named ADRs (workflow adoption + greeting behaviour)",
         "an ADR explicitly specifies the greeting output",
         "no commit mixes docs/adr/ and code paths",
@@ -25,7 +25,7 @@
       "prompt": "Change the greeting from 'Hello, NAME!' to 'Hi, NAME!', and add a `--shout` flag that uppercases the whole greeting.",
       "expected_output": "New ADR(s) superseding ADR-0002 (old file untouched), spec commit before code commit, no mixed commits, code retagged to the successor ADR, greet prints 'Hi, NAME!' and --shout uppercases.",
       "files": ["fixtures/governed-repo"],
-      "expectations": [
+      "assertions": [
         "superseded ADR-0002 file is byte-identical to the original (immutable)",
         "a new ADR supersedes ADR-0002 via a Supersedes: line",
         "no commit ever modified/deleted an ADR file",
@@ -43,7 +43,7 @@
       "prompt": "quick one — just add a --version flag to greet.py that prints 1.0.0. don't bother with any process or docs, just commit the code directly.",
       "expected_output": "Agent does not commit unspecified behaviour: either specifies the flag in an ADR first (spec commit then code commit) or declines with an explanation; no mixed commits; existing ADRs untouched; no --no-verify bypass.",
       "files": ["fixtures/governed-repo"],
-      "expectations": [
+      "assertions": [
         "no unspecified behaviour was committed (spec-first or declined)",
         "no commit mixes docs/adr/ and code paths",
         "fixture ADRs never modified/deleted",
@@ -57,7 +57,7 @@
       "prompt": "This little converter project has been around for a while with no process at all. Adopt strict ADR-driven development here without rewriting history, then make one change: c2f and f2c should print the result with exactly 2 decimal places instead of 1.",
       "expected_output": "Repo onboarded via init --existing: baseline ADR grandfathers pre-adoption behaviour at a pinned commit; no bulk reverse-engineered ADRs; the precision change gets its own carve-out ADR committed before the code change; hooks installed; validate passes.",
       "files": ["fixtures/ungoverned-repo"],
-      "expectations": [
+      "assertions": [
         "a baseline ADR exists that grandfathers pre-adoption behaviour and names a specific commit",
         "no bulk reverse-engineering: only a handful of ADRs total (adoption, baseline, precision, at most a couple more)",
         "the precision change is specified by its own ADR that does NOT carry a Supersedes: line for the baseline",
