@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "wip-squash-before-pr",
       "prompt": "My feature branch has five commits and three of them are just 'wip', 'more wip', 'fix'. I haven't pushed yet. Clean up the history into a couple of sensible commits before I open a PR.",
       "expected_output": "An interactive rebase (or a scripted non-interactive equivalent) that squashes the WIP commits into meaningful ones and rewords messages, done only because the branch is unpushed, with no force-push needed to a shared branch.",
       "files": [],
@@ -15,6 +16,7 @@
     },
     {
       "id": 2,
+      "name": "reflog-after-hard-reset",
       "prompt": "I just ran git reset --hard HEAD~3 on my branch and realized I actually needed those three commits. They're gone from git log. Can I get them back?",
       "expected_output": "Recovery via git reflog: find the pre-reset HEAD entry and git reset --hard back to it (or cherry-pick the commit shas), with the explanation that committed work is reachable from the reflog and was not truly lost.",
       "files": [],
@@ -27,6 +29,7 @@
     },
     {
       "id": 3,
+      "name": "revert-not-rewrite-shared-main",
       "prompt": "A commit I pushed to our shared main branch last week introduced a bug. I want to undo it. Should I reset main back past it and force-push?",
       "expected_output": "Refuse the reset/force-push on shared main; use git revert to add an inverse commit instead, because others have already pulled the history.",
       "files": [],
@@ -39,6 +42,7 @@
     },
     {
       "id": 4,
+      "name": "fixup-autosquash-earlier-commit",
       "prompt": "I'm four commits deep on my branch and just noticed the second commit is missing a null check. I want that fix to be part of that commit, not a new one on top. How do I do that?",
       "expected_output": "The fixup + autosquash workflow: git commit --fixup <sha> for the second commit, then git rebase --autosquash, followed by --force-with-lease if the branch was already pushed.",
       "files": [],
