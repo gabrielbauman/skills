@@ -5,7 +5,7 @@
       "id": 1,
       "name": "strip-noise-keep-constraints",
       "prompt": "Clean up the comments in this file. Don't change any behaviour:\n\n```python\nimport time\n\n# ---- helpers ----\n\n# Function to fetch a user by id\ndef fetch_user(user_id):\n    # Build the URL\n    url = f\"https://api.example.com/users/{user_id}\"\n    # The API returns created_at in milliseconds, not seconds like the\n    # rest of our codebase assumes; convert before returning.\n    raw = http_get(url)\n    # Convert the timestamp\n    raw[\"created_at\"] = raw[\"created_at\"] / 1000\n    # Return the user\n    return raw\n\n# Retry loop\ndef fetch_with_retry(user_id):\n    # Loop 5 times\n    for attempt in range(5):\n        try:\n            # Try to fetch\n            return fetch_user(user_id)\n        except TransientError:\n            # Sleep with exponential backoff\n            time.sleep(2 ** attempt)\n    raise\n```",
-      "expected_output": "The narration comments (Build the URL, Convert the timestamp, Return the user, Loop 5 times, Try to fetch, section banner, name-restating dockind comments) are deleted; the milliseconds-vs-seconds constraint comment is kept; behaviour is unchanged.",
+      "expected_output": "The narration comments ('Build the URL', 'Convert the timestamp', 'Return the user', 'Loop 5 times', 'Try to fetch'), the section banner, and the name-restating comments ('Function to fetch a user by id', 'Retry loop') are deleted; the milliseconds-vs-seconds constraint comment is kept; behaviour is unchanged.",
       "files": [],
       "assertions": [
         "The milliseconds-to-seconds constraint comment is preserved (possibly reworded, meaning intact)",
