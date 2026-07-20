@@ -1,6 +1,6 @@
 ---
 name: pr-description
-description: "Write the PR description itself: lead with what changed and why, give the reviewer a reading order and the parts to scrutinize, flag what is risky or uncertain, state what was deliberately left out, and link the issue it closes. Use this skill whenever opening a pull request, merge request, or changelist, when asked to write or rewrite a PR description or body, or when a diff is ready to send for review. Covers the failure modes of restating the diff in prose, the empty 'various changes' body, and burying the one risky hunk under mechanical noise. Complements small-prs, which decides what goes in the branch, atomic-commits, which orders the commits, and scoped-commits, which writes each commit message; this skill writes the body that sits on top of them, and it is the description branch-review reads first when scoping its review and reviewing-code reads first to judge the diff against its intent."
+description: "Write the PR description itself: lead with what changed and why, give the reviewer a reading order and the parts to scrutinize, flag what is risky or uncertain, state what was deliberately left out, and link the issue it closes. Use whenever opening a pull request, merge request, or changelist, or when asked to write or rewrite a PR description or body. Pairs with small-prs (what goes in the branch), atomic-commits (commit order), and scoped-commits (each message); this skill writes the body on top of them."
 ---
 
 # PR description

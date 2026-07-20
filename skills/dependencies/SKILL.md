@@ -1,6 +1,6 @@
 ---
 name: dependencies
-description: "Manage third-party dependencies as long-term liabilities, not free code: decide when a package earns its place versus writing the function yourself, vet it before adding (maintenance, transitive tree, license, install scripts, name spelled exactly right), commit the lockfile, bump one dependency at a time with the upstream changelog read first, keep bumps out of feature branches, and remove packages that no longer pay rent. Use whenever adding, upgrading, auditing, or removing a package, editing package.json, requirements.txt, pyproject.toml, Cargo.toml, go.mod, Gemfile, or any lockfile, handling a security advisory or a Dependabot/Renovate PR, or choosing between a library and hand-rolling. Pairs with small-prs and atomic-commits, which keep each bump its own reviewable change, and secure-coding, which covers the code you write around the packages."
+description: "Manage third-party dependencies as long-term liabilities, not free code: decide when a package earns its place versus writing the function yourself, vet before adding (maintenance, transitive tree, license, install scripts, exact name), commit the lockfile, bump one dependency at a time with the upstream changelog read first, and remove packages that no longer pay rent. Use whenever adding, upgrading, auditing, or removing a package, editing a manifest or lockfile (package.json, pyproject.toml, Cargo.toml, go.mod, Gemfile), handling a security advisory or Dependabot/Renovate PR, or choosing between a library and hand-rolling."
 ---
 
 # Dependencies

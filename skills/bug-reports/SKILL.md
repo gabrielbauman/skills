@@ -1,6 +1,6 @@
 ---
 name: bug-reports
-description: "Write bug reports a stranger can act on without a follow-up question: one bug per report, a title stating symptom plus condition, expected versus actual behavior, numbered reproduction steps from a clean start, exact error text pasted as text, the environment details that matter, how often it happens, and observation kept separate from diagnosis with speculation labeled as such. Use whenever filing an issue or bug report, writing up a defect found while testing or reviewing, reporting a failure upstream to a library or vendor, escalating a production incident in writing, or triaging and firming up a vague report someone else filed. Pairs with debugging, which consumes these reports as its starting conditions and produces the shrunken reproduction worth filing."
+description: "Write bug reports a stranger can act on without a follow-up question: one bug per report, a symptom-plus-condition title, expected versus actual behavior, numbered reproduction steps from a clean start, exact error text, the environment details that matter, and observation kept separate from speculation. Use whenever filing an issue or bug report, writing up a defect found while testing or reviewing, reporting a failure upstream, escalating an incident in writing, or firming up someone else's vague report. Pairs with debugging, which produces the reproduction worth filing."
 ---
 
 # Bug reports

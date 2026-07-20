@@ -1,6 +1,6 @@
 ---
 name: writing-docs
-description: "Write documentation for the reader who arrives with a task: lead the README with what the thing is and a copy-pasteable quickstart, keep tutorials, how-to guides, reference, and explanation separate instead of one mixed page, prefer runnable examples over prose descriptions, document the sharp edges and failure modes users actually hit, keep docs next to the code they describe so diffs catch them, and fix or delete stale docs on sight because wrong outlasts missing for damage. Use whenever writing or updating a README, getting-started guide, how-to, API reference, runbook, or onboarding doc, when documenting a new feature, tool, or setup process, or when auditing existing docs for rot. Pairs with humanize, which governs the prose itself, and why-comments, which covers the same what-versus-why judgment inside the code."
+description: "Write documentation for the reader who arrives with a task: lead the README with what the thing is and a copy-pasteable quickstart, keep tutorials, how-to guides, reference, and explanation separate, prefer runnable examples over prose, document the sharp edges users actually hit, keep docs next to the code they describe, and fix or delete stale docs on sight. Use whenever writing or updating a README, getting-started guide, how-to, API reference, runbook, or onboarding doc, or when auditing docs for rot. Pairs with humanize, which governs the prose itself."
 ---
 
 # Writing docs

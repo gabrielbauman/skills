@@ -1,6 +1,6 @@
 ---
 name: changelog
-description: "Write and update CHANGELOG.md by curating what changed for end users, never by transcribing the git log. Follows the Common Changelog format (common-changelog.org): releases newest first with linked versions and ISO dates, changes grouped under Changed/Added/Removed/Fixed, one-line imperative entries, breaking changes bolded and sorted first with migration pointers. Use whenever asked to update a changelog, add a changelog entry, write release notes, cut or prepare a release, or generate a changelog from commits or git history. Treats git log and git diff as raw input only: commit messages address developers, changelogs address users, and many commits deserve no entry at all."
+description: "Write and update CHANGELOG.md by curating what changed for end users, never by transcribing the git log. Follows the Common Changelog format (common-changelog.org): releases newest first, changes grouped under Changed/Added/Removed/Fixed, one-line imperative entries, breaking changes bolded and sorted first with migration pointers. Use whenever asked to update a changelog, write release notes, cut or prepare a release, or generate a changelog from commits; commit messages address developers, changelogs address users."
 ---
 
 # Changelog

@@ -1,6 +1,6 @@
 ---
 name: reviewing-code
-description: "Review a pull request the way a good colleague does: understand the intent before judging the diff, separate blocking defects from nits, ground every blocking comment in a defect or a written rule rather than taste, ask real questions instead of asserting guesses, and leave style to the formatter. Use whenever reviewing someone else's PR, MR, branch, or diff, when asked to leave review comments, approve, or request changes, or when drafting feedback on another person's code. Covers reading order, severity triage, nit labeling, comment tone, when to request changes versus approve with comments, keeping review scope inside the PR's scope, and reviewing promptly in one batch. Pairs with branch-review, which runs the multi-agent version of this sweep before merge, pr-description, the author's side of the same exchange, and small-prs, which keeps the thing under review reviewable."
+description: "Review a pull request the way a good colleague does: understand the intent before judging the diff, separate blocking defects from nits, ground every blocking comment in a defect or a written rule rather than taste, ask real questions instead of asserting guesses, and leave style to the formatter. Use whenever reviewing someone else's PR, MR, branch, or diff, or when asked to leave review comments, approve, request changes, or draft feedback on another person's code. Pairs with branch-review, the multi-agent version of this sweep, and pr-description, the author's side of the exchange."
 ---
 
 # Reviewing code

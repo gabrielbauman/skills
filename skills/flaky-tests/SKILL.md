@@ -1,6 +1,6 @@
 ---
 name: flaky-tests
-description: "Treat an intermittently failing test as a bug to fix, not a nuisance to rerun: quarantine it visibly with an owner and an expiry instead of retrying until green, reproduce the flake with a counted loop, diagnose against the usual suspects (sleep-based waits, test order and shared state, unseeded randomness, real clocks, real networks, leaked resources), fix the mechanism instead of widening the timeout, and recognize when the flake is a real race in the product. Use whenever a test fails intermittently or only in CI, passes on retry, fails only in parallel runs or only after other tests, or when asked to fix, skip, or delete a flaky test, add automatic retries to a suite, or investigate CI instability. Pairs with test-behavior, which covers what tests should assert in the first place, and debugging, whose counted-reproduction discipline is how a flake gets pinned down."
+description: "Treat an intermittently failing test as a bug to fix, not a nuisance to rerun: quarantine it visibly with an owner and expiry, reproduce with a counted loop, diagnose against the usual suspects (sleep-based waits, test order and shared state, unseeded randomness, real clocks and networks, leaked resources), and fix the mechanism instead of widening the timeout. Use whenever a test fails intermittently or only in CI, passes on retry, fails only in parallel runs or after other tests, or when asked to fix, skip, or delete a flaky test, add automatic retries, or investigate CI instability."
 ---
 
 # Flaky tests
