@@ -1,6 +1,6 @@
 ---
 name: scoped-commits
-description: "Write git commit messages in the Scoped Commits style (scopedcommits.com): the subject is \"scope: description\", affected subsystem first, as used by Linux, Go, Git, and nixpkgs, with a house style of concise, plain-ASCII text, no emoji, no filler. Use every time you are about to commit when the repo's log already uses scope-first subjects like \"net/http: fix cookie parsing\", when making the first commit in a new repository, or when AGENTS.md, CLAUDE.md, or CONTRIBUTING says to. Do not use Conventional Commits prefixes (feat:, fix:, chore:) in these repositories. Pairs with atomic-commits, which decides what goes in the commit."
+description: "Write git commit messages in the Scoped Commits style (scopedcommits.com): the subject is \"scope: description\", affected subsystem first, as used by Linux, Go, Git, and nixpkgs, plus a house style: concise plain ASCII, no emoji, no filler. Use before every commit when the repo's log already uses scope-first subjects like \"net/http: fix cookie parsing\", when making the first commit in a new repository, or when AGENTS.md, CLAUDE.md, or CONTRIBUTING says to. Do not use Conventional Commits prefixes (feat:, fix:, chore:) there. Pairs with atomic-commits, which decides what goes in the commit."
 ---
 
 # Scoped Commits

@@ -1,6 +1,6 @@
 ---
 name: error-handling
-description: "Handle errors so failures are loud, actionable, and traceable instead of swallowed: fail early rather than limp on with bad state, attach the underlying cause, name what was attempted and with which inputs, catch at the boundary that can act, choose deliberately between retry, propagate, and crash, and never leak secrets or internals to users. Use whenever writing or reviewing code that can fail: catch/except blocks, error messages, retries, deciding what to do with a returned error, or cleaning up code that hides failures. Pairs with logging (report a caught error once, at the boundary that acts) and secure-coding (fail closed at the trust boundary)."
+description: "Handle errors so failures are loud, actionable, and traceable instead of swallowed: fail early rather than limp on with bad state, attach the underlying cause, name what was attempted and with which inputs, catch at the boundary that can act, choose deliberately between retry, propagate, and crash, and never leak secrets or internals to users. Use whenever writing or reviewing code that can fail: catch/except blocks, error messages, retries, deciding what to do with a returned error, or cleaning up code that hides failures. Pairs with secure-coding (fail closed at the trust boundary)."
 ---
 
 # Error-handling

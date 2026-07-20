@@ -1,6 +1,6 @@
 ---
 name: small-prs
-description: "Keep each branch or PR down to one reviewable idea by deciding scope before writing code: state a scope contract (what the change will and will not touch), park everything discovered along the way instead of fixing it in passing, and split big asks into a planned series of self-contained steps. Use when starting any task that could grow beyond a few files, when planning a branch or PR, when a prompt bundles extra work ('while you're in there, also...'), when you notice unrelated problems mid-task, or before opening a PR to check the diff against the declared scope. Pairs with atomic-commits, which splits the finished tree into commits; this skill decides what goes into the branch at all."
+description: "Keep each branch or PR down to one reviewable idea by deciding scope before writing code: state what the change will and will not touch, park what you discover instead of fixing it in passing, and split big asks into a series of self-contained steps. Use when starting any task that could grow beyond a few files, when planning a branch or PR, when a prompt bundles extra work ('while you're in there, also...'), when you notice unrelated problems mid-task, or before opening a PR to check the diff against the declared scope. Pairs with atomic-commits, which splits the finished tree into commits."
 ---
 
 # Small PRs

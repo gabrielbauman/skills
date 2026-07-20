@@ -1,6 +1,6 @@
 ---
 name: db-migrations
-description: "Change database schemas without breaking the running system: every migration stays compatible with the code deployed before and after it (expand and contract), renames happen as add-backfill-swap, backfills run separately from schema DDL, destructive steps ship in their own later deploy, and lock behavior is checked before DDL touches a hot table. Use whenever writing or reviewing a schema migration, renaming or dropping a column or table, changing a type or constraint, adding an index to a production database, or planning a backfill. Pairs with refactoring, the same keep-it-working-at-every-step discipline applied to code."
+description: "Change database schemas without breaking the running system: every migration stays compatible with the code before and after it (expand and contract), renames happen as add-backfill-swap, backfills run as separate jobs, destruction ships in its own later deploy, and lock behavior is checked before DDL touches a hot table. Use whenever writing or reviewing a schema migration, renaming or dropping a column or table, changing a type or constraint, adding an index in production, or planning a backfill. Pairs with refactoring, the same keep-it-working-at-every-step discipline applied to code."
 ---
 
 # Database migrations

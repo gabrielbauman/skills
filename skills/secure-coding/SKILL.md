@@ -1,6 +1,6 @@
 ---
 name: secure-coding
-description: "Write code that holds at the trust boundary: treat every external input as attacker-controlled until validated server-side, build SQL, shell commands, HTML, and paths by parameterization instead of string concatenation, check authorization at every resource access, keep secrets out of code, logs, URLs, and error messages, use vetted crypto, and fail closed. Use whenever handling user input or file uploads, building queries or shell commands, adding an endpoint or permission check, storing passwords or tokens, or reaching for eval, shell=True, or dangerouslySetInnerHTML. Pairs with dependencies, the supply-chain half of the attack surface."
+description: "Write code that holds at the trust boundary: treat external input as attacker-controlled until validated server-side, build SQL, shell commands, HTML, and paths by parameterization, never concatenation, authorize every resource access, keep secrets out of code, logs, and URLs, use vetted crypto, and fail closed. Use whenever handling user input or file uploads, building queries or shell commands, adding an endpoint or permission check, storing passwords or tokens, or reaching for eval, shell=True, or dangerouslySetInnerHTML. Pairs with dependencies, the supply-chain half of the attack surface."
 ---
 
 # Secure coding

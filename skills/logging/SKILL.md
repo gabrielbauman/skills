@@ -1,6 +1,6 @@
 ---
 name: logging
-description: "Write logs an operator can act on: match the level to who reads it and what they must do (ERROR someone must act, WARN suspicious but handled, INFO milestone, DEBUG diagnostic), log structured key-value fields instead of interpolated strings, record ids and what was attempted, never log secrets or PII, and log at boundaries and state transitions rather than every line. Use whenever adding or reviewing logging, instrumenting for observability, choosing a log level, deciding what to log on an error path, or cleaning up noisy or unqueryable logs. Pairs with error-handling: log a caught error once, at the boundary that acts."
+description: "Write logs an operator can act on: match the level to who reads it and what they must do, log structured key-value fields instead of interpolated strings, record the ids and context needed to act, never log secrets or PII, and log at boundaries and state transitions rather than every line. Use whenever adding or reviewing logging, instrumenting for observability, choosing a log level, deciding what to log on an error path, or cleaning up noisy or unqueryable logs. Pairs with error-handling (log a caught error once, at the boundary that acts)."
 ---
 
 # Logging

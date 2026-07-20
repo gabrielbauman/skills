@@ -1,6 +1,6 @@
 ---
 name: naming
-description: "Name variables, functions, types, and files so the name states intent and role, not implementation or type. Use whenever writing new code, reviewing names, or renaming during a refactor. Covers vague fillers (data, temp, handle, obj), names that lie about what the thing does, Hungarian and encoded prefixes, abbreviations that cost the reader, scaling length to scope, dropping noise words (Manager, Helper, Util, Info), booleans that read as predicates, and staying consistent with the surrounding codebase. Pairs with why-comments: a good name deletes the comment that was there to explain a bad one."
+description: "Name variables, functions, types, and files so the name states intent and role, not implementation or type. Use whenever writing new code, reviewing names, or renaming during a refactor. Covers vague fillers (data, temp, handle, obj), names that lie about what the thing does, Hungarian prefixes, costly abbreviations, scaling length to scope, noise words (Manager, Helper, Util), booleans that read as predicates, and matching the surrounding codebase. Pairs with why-comments (a good name deletes the comment explaining a bad one)."
 ---
 
 # Naming

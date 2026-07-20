@@ -1,6 +1,6 @@
 ---
 name: test-behavior
-description: "Write tests that verify observable behavior rather than pinning the implementation: assert on outcomes instead of mock calls, mock only at boundaries you do not control, name tests as behavior claims, cover boundaries and error paths, and reproduce a bug in a failing test before fixing it (red before green). Use whenever writing tests, adding coverage, fixing a bug, reviewing code that ships with tests, refactoring tested code, or cleaning up a brittle, mock-heavy suite. Pairs with flaky-tests, for the test that fails intermittently, and refactoring, which leans on this suite as its safety net."
+description: "Write tests that verify observable behavior rather than pinning the implementation: assert on outcomes instead of mock calls, mock only at boundaries you do not control, name tests as behavior claims, cover boundaries and error paths, and reproduce a bug in a failing test before fixing it (red before green). Use whenever writing tests, adding coverage, fixing a bug, reviewing code that ships with tests, refactoring tested code, or cleaning up a brittle, mock-heavy suite. Pairs with flaky-tests, for the test that fails intermittently."
 ---
 
 # Test Behavior

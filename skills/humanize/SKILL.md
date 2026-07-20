@@ -1,6 +1,6 @@
 ---
 name: humanize
-description: "Write prose that reads like a person wrote it, and strip AI tells from existing text. Use whenever drafting or revising anything a human will read as prose (blog posts, docs, READMEs, emails, reports, announcements, marketing copy, PR descriptions) and whenever asked to humanize text, remove AI slop, make writing sound natural, or edit AI-generated drafts. Covers the common tells: em-dash addiction, \"it's not X, it's Y\" reframes, delve/robust/landscape vocabulary, bold-first bullets, manufactured drama, templated structure. Pairs with writing-docs, which decides what a document should contain while this skill governs how its prose reads."
+description: "Write prose that reads like a person wrote it, and strip AI tells from existing text. Use when drafting or revising anything a human will read as prose (blog posts, docs, READMEs, emails, reports, announcements, marketing copy, PR descriptions) or when asked to humanize text, remove AI slop, make writing sound natural, or edit AI-generated drafts. Covers the common tells: em-dash addiction, \"it's not X, it's Y\" reframes, delve/robust vocabulary, bold-first bullets, manufactured drama. Pairs with writing-docs (it decides what a document contains; this skill governs how its prose reads)."
 ---
 
 # Humanize

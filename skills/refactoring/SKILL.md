@@ -1,6 +1,6 @@
 ---
 name: refactoring
-description: "Refactor safely: change structure while preserving observable behavior, keep the tests green after every step, and work in small reversible moves instead of one big-bang rewrite. Use whenever restructuring, renaming, extracting, inlining, or reshaping code without changing what it does, when a task needs preparatory cleanup before the real change, or when tempted to rewrite from scratch. Covers characterization tests for untested code and when not to refactor at all. Pairs with test-behavior (the green safety net), atomic-commits (the refactor in its own commit), and db-migrations (the same discipline for schemas)."
+description: "Refactor safely: change structure while preserving observable behavior, in small reversible moves that stay green instead of one big-bang rewrite. Use whenever restructuring, renaming, extracting, inlining, or reshaping code without changing what it does, when a task needs preparatory cleanup before the real change, or when tempted to rewrite from scratch. Covers characterization tests for untested code and when not to refactor at all. Pairs with test-behavior (the green safety net), atomic-commits (the refactor in its own commit), and db-migrations (the same discipline for schemas)."
 ---
 
 # Refactoring

@@ -1,6 +1,6 @@
 ---
 name: performance
-description: "Optimize measured hotspots against a stated target instead of guessing: profile before changing anything, set a numeric goal so you know when to stop, take structural wins (N+1 queries, missing indexes, quadratic loops) before micro-optimizations, change one thing at a time and re-measure on realistic data, and treat caching as a last resort that needs an invalidation story. Use whenever something is slow, when asked to optimize, speed up, or profile code, when reviewing a change justified by performance, when tempted to add a cache, or when a latency, throughput, memory, or cost target is in play."
+description: "Optimize measured hotspots against a stated target instead of guessing: profile before changing anything, set a numeric goal so you know when to stop, take structural wins (N+1 queries, missing indexes, quadratic loops) before micro-optimizations, change one thing at a time and re-measure, and treat caching as a last resort. Use whenever something is slow, when asked to optimize, speed up, or profile code, when reviewing a change justified by performance, when tempted to add a cache, or when a latency, throughput, memory, or cost target is in play."
 ---
 
 # Performance

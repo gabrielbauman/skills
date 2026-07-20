@@ -1,6 +1,6 @@
 ---
 name: git-recovery
-description: "Reshape and recover git history safely: interactive rebase to reorder, squash, split, and reword; fixup plus autosquash; reset --soft/--mixed/--hard and when each is right; --force-with-lease instead of --force; the reflog as the undo of last resort; revert for already-shared commits. Use when cleaning up messy history before review, undoing a commit, reset, merge, rebase, or bad amend, recovering a lost commit or branch, or when a force-push risks clobbering a teammate's work. Covers non-interactive rebase alternatives for agent environments. Pairs with atomic-commits, which decides what each commit should contain."
+description: "Reshape and recover git history safely: interactive rebase to reorder, squash, split, and reword; fixup plus autosquash; reset --soft/--mixed/--hard and when each is right; --force-with-lease instead of --force; the reflog as the undo of last resort; revert for already-shared commits. Use when cleaning up messy history before review, undoing a commit, reset, merge, rebase, or bad amend, recovering a lost commit or branch, or when a force-push risks clobbering a teammate's work. Covers non-interactive rebase alternatives for agent environments."
 ---
 
 # Git Recovery
