@@ -171,7 +171,7 @@ When you feel the urge to add a comment explaining what a name means, that is
 the name asking to be better. `d` with a comment `# users keyed by id` should
 just be `users_by_id`. `t` with `# timeout in seconds` should be
 `timeout_seconds`. The comment goes stale independently of the code; the name
-can't. See [[why-comments]]: the comments worth keeping explain *why*, and a
+can't. See why-comments: the comments worth keeping explain *why*, and a
 name that has to be explained by a *what* comment is a name not yet finished.
 
 ```python
