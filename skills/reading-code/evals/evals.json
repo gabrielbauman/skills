@@ -1,0 +1,47 @@
+{
+  "skill_name": "reading-code",
+  "evals": [
+    {
+      "id": 1,
+      "name": "grep-hit-editing-resistance",
+      "prompt": "I need to change invoice rounding to round-half-up. I grepped for calculateTotal and there are three definitions: src/billing/legacy/totals.js, src/billing/totals.js, and src/gateway/utils.js. To be safe I figure we just change all three. How would you handle it?",
+      "expected_output": "The agent declines to shotgun-edit all three. It proposes tracing a real invoice request from the entry point to determine which implementation is on the live path, treating the legacy/ copy as suspect dead code to be verified (checking imports and callers) rather than edited, and investigating whether the gateway copy is a duplicate that should be consolidated or serves a different purpose. Only the load-bearing implementation gets the behavior change, verified by following actual callers.",
+      "files": [],
+      "assertions": [
+        "Rejects editing all three definitions 'to be safe' and explains the risk: changing dead or differently-purposed code either does nothing or changes behavior nobody asked for",
+        "Proposes tracing from a real entry point (a request, job, or CLI invocation) to find which implementation is actually on the live invoice path, rather than deciding from the grep output alone",
+        "Treats the legacy/ hit as probably dead code whose reachability should be verified (imports, callers) before touching it",
+        "Checks callers or imports of each definition instead of assuming the file paths tell the whole story",
+        "Suggests confirming the conclusion by observation (running the code path, a test, or a log/breakpoint) rather than by reading alone"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "chestertons-fence",
+      "prompt": "There's a bare `time.sleep(0.5)` in our deploy script right after the health check passes, no comment, and it slows down every deploy. Delete it.",
+      "expected_output": "The agent does not delete the sleep blind. It uses git blame/log on that line to find the commit that added it and the PR or issue it links, since an uncommented sleep after a health check usually papers over a real race (e.g. the health endpoint reporting ready before the service is). If the original reason is found and obsolete, it removes the sleep and records why in the commit; if the sleep is masking a condition, it replaces the sleep with an explicit wait on that condition rather than just deleting it.",
+      "files": [],
+      "assertions": [
+        "Does not delete the sleep before investigating why it exists",
+        "Uses git history (blame/log on the line, the commit message, linked PR or issue) to recover the original reason for the sleep",
+        "Hypothesizes what the sleep may be compensating for (a readiness race after the health check or similar) and treats deleting it as risking that failure's return",
+        "If removal is warranted, proposes replacing the sleep with an explicit wait on the actual condition, or removing it with the recovered justification recorded in the commit message",
+        "Suggests verifying the change against real deploy behavior rather than assuming the deletion is safe because tests pass"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "verify-model-before-building",
+      "prompt": "I'm adding audit logging for order changes. Plan: add an emitAuditEvent() call inside OrderService.save(), since all order writes go through it. Sanity-check the plan and then let's do it.",
+      "expected_output": "The agent treats 'all order writes go through OrderService.save' as a belief to verify, not a fact. Before endorsing the plan it searches for counterexamples: direct repository/DB writes, bulk imports, admin scripts, other services touching the same table. It states how it would verify (searching for writes that bypass the service, checking callers of the repository layer) and only then either confirms the single-choke-point plan or adapts it (e.g. moving the audit hook to the layer all writes actually share).",
+      "files": [],
+      "assertions": [
+        "Does not accept 'all order writes go through OrderService.save' at face value; identifies it as the load-bearing assumption of the whole plan",
+        "Actively searches for counterexamples (direct repository or database writes, bulk imports, admin/maintenance scripts, other services writing the same data) rather than only reading OrderService",
+        "Explains the stake: any write path that bypasses save() would silently produce no audit record, which defeats the feature",
+        "Verifies by observation where possible (searching callers of the persistence layer, grep for raw writes, running a write path) before editing",
+        "If bypassing paths exist or cannot be ruled out, adjusts the design (hook at the layer all writes share, or cover the extra paths explicitly) instead of proceeding with the original plan unchanged"
+      ]
+    }
+  ]
+}
