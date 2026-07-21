@@ -133,7 +133,7 @@ is sized to the need too.
 `| safe`, disabled CSRF, `verify=False`: each is a deliberate hole in
 a protection someone built. Sometimes the hole is justified; it is
 never justified silently. Each use gets a comment saying why it is
-safe here (per why-comments, this is a constraint worth writing
+safe here (per code-comments, this is a constraint worth writing
 down), and absent that justification, reviewers should treat it as a
 finding.
 

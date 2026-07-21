@@ -1,6 +1,6 @@
 ---
 name: naming
-description: "Name variables, functions, types, and files so the name states intent and role, not implementation or type. Use whenever writing new code, reviewing names, or renaming during a refactor. Covers vague fillers (data, temp, handle, obj), names that lie about what the thing does, Hungarian prefixes, costly abbreviations, scaling length to scope, noise words (Manager, Helper, Util), booleans that read as predicates, and matching the surrounding codebase. Pairs with why-comments (a good name deletes the comment explaining a bad one)."
+description: "Name variables, functions, types, and files so the name states intent and role, not implementation or type. Use whenever writing new code, reviewing names, or renaming during a refactor. Covers vague fillers (data, temp, handle, obj), names that lie about what the thing does, Hungarian prefixes, costly abbreviations, scaling length to scope, noise words (Manager, Helper, Util), booleans that read as predicates, and matching the surrounding codebase. Pairs with code-comments (a good name deletes the comment explaining a bad one)."
 ---
 
 # Naming
@@ -171,7 +171,7 @@ When you feel the urge to add a comment explaining what a name means, that is
 the name asking to be better. `d` with a comment `# users keyed by id` should
 just be `users_by_id`. `t` with `# timeout in seconds` should be
 `timeout_seconds`. The comment goes stale independently of the code; the name
-can't. See why-comments: the comments worth keeping explain *why*, and a
+can't. See code-comments: the comments worth keeping explain *why*, and a
 name that has to be explained by a *what* comment is a name not yet finished.
 
 ```python

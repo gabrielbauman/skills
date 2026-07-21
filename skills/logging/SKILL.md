@@ -194,7 +194,7 @@ the exception rather than logging a second line for it.
 
 A log line and a comment answer different questions for different people. The
 comment explains to the next person editing the code why it does something
-non-obvious; it is read at the source (see why-comments). The log explains to
+non-obvious; it is read at the source (see code-comments). The log explains to
 the operator watching the system what it did and with what data; it is read
 in production, detached from the code. Do not swap them. A comment that says
 "log this for the metrics dashboard" is fine; a log line that exists to

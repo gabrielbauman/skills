@@ -86,7 +86,7 @@ every teammate learns the hard way. One "if you see X, it means Y, do
 Z" paragraph placed at the step where X happens can retire a
 recurring support thread.
 
-This is why-comments at document scale: the valuable content is
+This is code-comments at document scale: the valuable content is
 constraints, consequences, and reasons, not restated mechanics.
 
 ## Wrong beats missing, so tend or delete

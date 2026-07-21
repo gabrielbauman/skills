@@ -1,9 +1,9 @@
 ---
-name: why-comments
-description: "Write code comments that explain why, never what, and strip comment noise from existing code: comment constraints, invariants, workarounds, and rejected alternatives; delete narration, section banners, and restated names; match the codebase's comment density. Use whenever writing code, editing code that has comments, writing docstrings or API docs, or asked to clean up, reduce, or improve comments. Pairs with naming (the fix for a comment explaining a bad name is a better name) and writing-docs (the same what-versus-why judgment in docs)."
+name: code-comments
+description: "Write code comments that explain why, never what, and strip comment noise from existing code: comment constraints, invariants, workarounds, and rejected alternatives; delete narration, section banners, and restated names; match the codebase's comment density. Use whenever writing a code comment, writing code that may need comments, editing code that has them, writing docstrings or API docs, or asked to clean up, reduce, or improve comments. Pairs with naming (the fix for a comment explaining a bad name is a better name) and writing-docs (the same what-versus-why judgment in docs)."
 ---
 
-# Why-comments
+# Code comments
 
 Code is the behaviour. A comment that restates it says nothing and rots: the
 code gets edited, the comment doesn't, and now the file lies. The only
