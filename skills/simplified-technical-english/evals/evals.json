@@ -1,0 +1,52 @@
+{
+  "skill_name": "simplified-technical-english",
+  "evals": [
+    {
+      "id": 1,
+      "name": "rewrite-runbook-section",
+      "prompt": "Clean up this section of our failover runbook so on-call can actually follow it at 3am:\n\n\"In the event that replication lag has been observed to exceed 30s, failover initiation should be performed. The standby is promoted by the operator utilizing `pg_ctl promote -D /var/lib/pg/standby`, following which DNS cutover to the new primary can be effected via `./scripts/cutover.sh --confirm`, though it should be noted that the old primary must not be restarted before fencing, as split-brain data corruption could potentially result. Verification that the promotion has completed successfully is performed by checking that `SELECT pg_is_in_recovery();` is returning false.\"",
+      "expected_output": "A numbered procedure in imperative voice: condition first (when replication lag exceeds 30 seconds, ...), one instruction per step, commands preserved verbatim, the verification check placed directly after the promotion step as an expected result, and the split-brain risk promoted from an aside into a CAUTION that states both the required action (do not restart the old primary before fencing) and the consequence (split-brain corruption). No passive constructions like 'is performed by the operator', no 'utilizing', no buried conditions.",
+      "files": [],
+      "assertions": [
+        "The output is a numbered procedure with one instruction per step, each in the imperative form",
+        "The lag condition comes before its command (e.g. 'When replication lag exceeds 30 seconds, ...'), not after it",
+        "All three commands (`pg_ctl promote -D /var/lib/pg/standby`, `./scripts/cutover.sh --confirm`, `SELECT pg_is_in_recovery();`) appear character-for-character unchanged",
+        "The pg_is_in_recovery verification appears as an expected-result check directly after the promotion step, not as a trailing afterthought",
+        "The split-brain risk appears as a CAUTION (or equivalently prominent labeled safety instruction) stating both the action (do not restart the old primary before fencing) and the consequence (split-brain / data corruption), not as a parenthetical aside or skippable note",
+        "No passive-voice instructions ('should be performed', 'is promoted by') and no inflated verbs ('utilizing', 'effected') remain",
+        "Each procedural sentence is 20 words or fewer"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "write-upgrade-procedure",
+      "prompt": "Write the upgrade section for our agent's README. Facts: upgrading from v2 to v3 requires Node 20 or later. The config file moved from ~/.agentrc to ~/.config/agent/config.toml, and v3 reads only the new location. Users run `agent migrate-config` to copy it over, but if they have custom plugins they need to run `agent plugins rebuild` first or the migration silently drops plugin settings. After upgrading, `agent --version` should print 3.x. Downgrading back to v2 is possible but the migrated config is not backward compatible, so they should keep the old ~/.agentrc file until they're sure.",
+      "expected_output": "A short imperative procedure: prerequisite (Node 20) stated before any action, the plugin-rebuild condition placed before the migrate step it qualifies (e.g. 'If you have custom plugins, run `agent plugins rebuild` first...'), the silent-drop consequence stated with that condition, numbered steps ending with the `agent --version` verification as an expected result, and the keep-your-old-config advice attached to the downgrade caveat. All commands and paths (~/.agentrc, ~/.config/agent/config.toml) exact. No requirement demoted to a skippable note.",
+      "files": [],
+      "assertions": [
+        "The Node 20 prerequisite appears before any upgrade step, phrased as a condition or requirement, not discovered mid-procedure",
+        "The custom-plugins condition comes before the migrate-config command it qualifies, and states the consequence (plugin settings are silently dropped) of skipping it",
+        "Steps are numbered and imperative, one instruction per step",
+        "The `agent --version` check appears as an expected result after the upgrade action (states it prints 3.x)",
+        "Both config paths (~/.agentrc and ~/.config/agent/config.toml) and all three commands are reproduced exactly",
+        "The downgrade caveat keeps its normative force: keeping the old ~/.agentrc is advice tied to a stated reason (migrated config is not backward compatible), and the 'requires Node 20' requirement is not softened to a suggestion",
+        "No sentence buries a second instruction inside it (no 'run X, then Y, making sure Z' chains)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "fix-terminology-and-notes",
+      "prompt": "Our new hire said this troubleshooting doc confused them. Can you fix it without changing what it says?\n\n\"## Worker not picking up jobs\\n\\nThe job runner polls the queue every 5s. If the processor appears stuck, the daemon's logs should be examined for lease errors. Note: the worker must be stopped before its lease table row is deleted, otherwise two processors can hold the same lease. To reset, delete the row from `worker_leases` where `host` matches, and restart it. It should recover within one polling interval.\"",
+      "expected_output": "A rewrite that picks one term (e.g. 'the worker') for the component the original calls job runner/processor/daemon/worker and uses it throughout; promotes the note's stop-before-delete requirement into the procedure itself (or a CAUTION) since it is a mandatory ordering with a stated consequence, not supporting information; resolves the ambiguous pronouns ('restart it', 'It should recover'); preserves the table name `worker_leases`, the `host` column, and the 5-second polling interval exactly; and orders the reset as a proper conditional procedure.",
+      "files": [],
+      "assertions": [
+        "One consistent term is used for the component throughout; 'job runner', 'processor', 'daemon', and 'worker' no longer alternate for the same thing",
+        "The stop-before-delete requirement no longer lives in a skippable 'Note:'; it appears as a procedure step or CAUTION, with the two-holders-of-one-lease consequence kept",
+        "The reset is a numbered imperative procedure with stop before delete before restart, matching the original's mandated order",
+        "`worker_leases`, the `host` column reference, and the 5-second polling interval are preserved exactly",
+        "The ambiguous pronouns are resolved: what gets restarted and what recovers are named explicitly",
+        "The technical meaning is unchanged: no invented causes, no added steps beyond the original's, no dropped consequence"
+      ]
+    }
+  ]
+}
