@@ -1,0 +1,46 @@
+{
+  "skill_name": "subtractive-engineering",
+  "evals": [
+    {
+      "id": 1,
+      "name": "question-before-automating-report",
+      "prompt": "Every Monday someone on our team spends an hour compiling an ops metrics report from three dashboards and posting it to Slack. Nobody is quite sure who still reads it, but it's been a ritual for years. Write a script plus a GitHub Actions cron job that generates and posts it automatically so we stop wasting the hour.",
+      "expected_output": "The agent does not go straight to writing the script. It walks the ordered process: first question the report (who reads it, who originally asked for it, what need it serves), flagging 'nobody is sure who reads it' as the signal that the report is a deletion candidate, not an automation candidate. It recommends tracing the requirement to a person and trying deletion (skip a week, see who complains) before building anything, and explains that automating an unnecessary step builds a machine that does nothing. If it builds the automation at all, it does so only after stating what would need to be confirmed first.",
+      "files": [],
+      "assertions": [
+        "Questions who reads the report and who originally asked for it before automating",
+        "Identifies 'nobody is sure who reads it' as a signal to try deleting the report, not automate it",
+        "Proposes an observable deletion test (e.g. skip a week and see who complains) rather than assuming the report is needed",
+        "States the ordering rationale: automation comes last because automating an unneeded step yields a machine that does nothing",
+        "Does not deliver the cron job as the primary answer without first addressing whether the report should exist"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "trace-spec-requirement-to-a-person",
+      "prompt": "The spec for our billing revamp says invoices must be exported as PDF. Cleanest option I found is rendering HTML templates through headless Chrome in a sidecar container, which adds Chromium to our image and about 400MB. Go ahead and implement the PDF export that way.",
+      "expected_output": "The agent treats 'the spec says PDF' as the start of the conversation, not the end. Before adding a 400MB dependency, it asks who put the PDF requirement in the spec and what underlying need it serves (auditing, customer records, an accountant's workflow), noting that the real need might be satisfied by something far cheaper (CSV, an existing dashboard, emailed HTML). It only proceeds to the headless-Chrome design once the requirement is confirmed real, and may then also question whether that specific implementation is the simplest that satisfies it.",
+      "files": [],
+      "assertions": [
+        "Treats 'the spec says so' as insufficient and asks for the person and reason behind the PDF requirement",
+        "Names a cheaper alternative that might satisfy the underlying need (CSV, dashboard entry, HTML email, simpler PDF library)",
+        "Weighs the 400MB Chromium dependency as a cost that an unconfirmed requirement has not earned",
+        "Does not implement the sidecar as the immediate answer without questioning the requirement first"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "delete-before-optimizing-pipeline",
+      "prompt": "Our CI pipeline is up to 35 minutes and everyone's complaining. It runs 14 jobs, including a couple of legacy integration suites for a service we deprecated last quarter, a nightly-style full rebuild on every PR, and some lint jobs that duplicate what pre-commit already runs. Please add caching and parallelize the jobs to get the time down.",
+      "expected_output": "The agent does not start by adding caching and parallelism across all 14 jobs. It first questions and deletes: the legacy suites for a deprecated service and the duplicate lint jobs are removal candidates, and the full rebuild on every PR needs its requirement traced before it is preserved. Only the jobs that survive deletion get simplified and then accelerated with caching and parallelism. The agent explains the order: optimizing a job that should be deleted wastes the optimization, and caching a deprecated suite preserves waste efficiently.",
+      "files": [],
+      "assertions": [
+        "Identifies the deprecated-service suites and duplicate lint jobs as deletion candidates before optimizing anything",
+        "Questions the rationale for the full rebuild on every PR rather than accepting it as fixed",
+        "Applies caching and parallelism only to jobs that survive questioning and deletion",
+        "States the ordering rationale: accelerating or optimizing an unquestioned job does the wrong thing faster",
+        "Does not present blanket caching/parallelization of all 14 jobs as the solution"
+      ]
+    }
+  ]
+}
