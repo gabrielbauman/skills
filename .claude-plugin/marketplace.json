@@ -207,6 +207,15 @@
       "skills": ["./skills/secure-coding"]
     },
     {
+      "name": "simplified-technical-english",
+      "description": "Write procedures, runbooks, and instructional text in Simplified Technical English, adapted from ASD-STE100: imperative one-instruction steps, conditions before commands, active voice, one term per thing, sentence length caps, and warnings that state both the action and the consequence",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["writing", "documentation", "runbooks", "procedures", "style"],
+      "skills": ["./skills/simplified-technical-english"]
+    },
+    {
       "name": "small-prs",
       "description": "Keep each branch or PR down to one reviewable idea: state a scope contract before coding, park drive-by fixes instead of folding them in, and split big asks into a planned series of self-contained steps, refactor first",
       "source": "./",
