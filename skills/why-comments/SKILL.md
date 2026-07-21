@@ -27,10 +27,38 @@ undocumented. Default to zero comments, then add back only the ones below.
   the bug.
 - Units, formats, or ranges the type system can't express: "timeout in
   milliseconds", "amount in cents", "0.0 to 1.0 inclusive".
+- Why risky code is safe: for `unsafe` blocks, lock-free code, and
+  security-sensitive paths, state the invariant the safety rests on and who
+  maintains it: "SAFETY: ptr was allocated by this Vec and len <= capacity".
+  Rust's standard library requires these; the discipline transfers to any
+  language where one wrong assumption corrupts memory or leaks data.
 
-If none of these apply, and the code still seems to need a comment to be
-understood, the fix is usually a better name or a smaller function, not
-prose.
+## Refactor before you comment
+
+If none of the above apply and the code still seems to need a comment to be
+understood, the fix is code, not prose: a better name, an extracted
+function, a stronger type, an assertion. A comment explaining confusing code
+patches the symptom and starts rotting immediately; the rename fixes the
+cause and can't drift.
+
+```go
+var d int // days since last refresh
+```
+
+```go
+var daysSinceLastRefresh int
+```
+
+The exception is a call site you can't restructure. An argument whose
+meaning is invisible at the call is best fixed with keyword arguments or an
+options struct, but when the signature isn't yours to change,
+
+```go
+render(label, true /* primary */, false /* disabled */)
+```
+
+beats a bare `render(label, true, false)` and beats a comment on the line
+above, because it can't drift away from the argument it labels.
 
 ## What is noise
 

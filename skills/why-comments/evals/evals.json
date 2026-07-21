@@ -40,6 +40,19 @@
         "If a comment exists, it states the reason (float equality is unreliable for money) rather than describing the edit",
         "The fix compares integer cents"
       ]
+    },
+    {
+      "id": 4,
+      "name": "rename-instead-of-narrating",
+      "prompt": "This function is hard to follow. Add some comments so the next person can understand it:\n\n```python\ndef calc(u, d):\n    # u is the user, d is the discount\n    r = u.base * (1 - d)\n    if r < u.min:\n        r = u.min\n    return r\n```",
+      "expected_output": "The cryptic names are renamed (e.g. user, discount_rate, price, floor) instead of being explained line by line; the 'u is the user, d is the discount' comment is gone because the parameter names now say it; any remaining comment or docstring states the contract or the reason for the floor, not what each line does.",
+      "files": [],
+      "assertions": [
+        "The single-letter names are renamed to descriptive ones rather than kept and explained with comments",
+        "The 'u is the user, d is the discount' comment is removed, its content absorbed into the parameter names",
+        "No comment narrates individual lines (e.g. '# apply the discount', '# clamp to minimum')",
+        "Any docstring or comment that remains states the contract or a why, not implementation steps"
+      ]
     }
   ]
 }
