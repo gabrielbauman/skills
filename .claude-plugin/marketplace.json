@@ -225,6 +225,15 @@
       "skills": ["./skills/small-prs"]
     },
     {
+      "name": "subtractive-engineering",
+      "description": "Apply a fixed, ordered design process before building: question every requirement back to the person who asked, delete the part or process outright, simplify what survives, accelerate the iteration loop, and automate last",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["design", "simplicity", "process", "architecture"],
+      "skills": ["./skills/subtractive-engineering"]
+    },
+    {
       "name": "test-behavior",
       "description": "Write tests that verify observable behavior instead of pinning the implementation: assert on outcomes rather than mock calls and call counts, mock only at boundaries you do not control, name tests as behavior claims, cover boundaries and error paths, and reproduce bugs in a failing test before fixing",
       "source": "./",
