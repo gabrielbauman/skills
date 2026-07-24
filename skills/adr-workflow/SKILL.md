@@ -162,6 +162,35 @@ make, do not quietly decide it in code; that is exactly the unspecified
 behaviour this workflow exists to prevent. Go back to step 1 for the
 missing decision; a small follow-up ADR is cheap.
 
+## Where in-flight design lives
+
+Step 1 designs "in conversation" so the repo only ever holds accepted
+decisions. That is right for one sitting, but a conversation is not durable:
+it ends, compacts, or hands off to another agent, and a half-formed
+intention left in it is simply lost. Work that spans more than one session
+needs a durable home for design that is not yet a decision, and that home
+cannot be `docs/adr/` without breaking the guarantee.
+
+Use the project's issue tracker (or any mutable, shared scratch) for it:
+
+- **The issue thread is the proposal space.** Options, trade-offs, and open
+  questions iterate there as comments: mutable and cheap, unlike an ADR, and
+  durable across sessions, unlike the conversation. This is step 1 relocated
+  somewhere that survives, not a second spec.
+- **Acceptance is the extraction point.** When the user accepts a direction,
+  extract it into ADR(s) by the loop above (spec commit first, then
+  implementation) and link the ADR from the issue. The issue records how the
+  decision was reached; the ADR is the decision.
+- **Never draft ADRs for the backlog.** An ADR records an accepted decision.
+  An idea still being argued is not one, and writing it as an ADR either
+  commits a decision nobody made or leaves an uncommitted ADR file, which is
+  the second invisible spec this whole workflow exists to prevent. Ideas
+  wait in the tracker until they are accepted.
+
+The guarantee is unchanged: `docs/adr/` still holds only accepted, immutable
+decisions. The messy middle just gets a place to live that does not die with
+the chat.
+
 ## Code rules
 
 - Tag the implementing unit (function, class, module, whichever level the
