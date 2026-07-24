@@ -30,6 +30,17 @@ them. Worst of all is asserting a mock received the right call: that proves
 the code calls the mock the way the code calls the mock. It cannot catch a
 wrong result; it can only catch change.
 
+Do not assert on log output. A log line is diagnostic output for an
+operator, and its wording is meant to change freely as messages improve (the
+logging skill treats the text as the author's to reword). A test that greps
+the logs for `"user not found"` breaks the day someone rephrases the message
+and proves nothing a caller relies on in the meantime. Assert on the outcome
+the log was reporting instead: the raised error, the 404, the row that did
+not change. The lone exception is a log that is itself the product, an audit
+trail or a structured event another system consumes; that crossed a boundary
+and is fair to assert on, but assert on the structured fields that form the
+contract, never the human-readable sentence.
+
 ## Mock at the boundary
 
 Mock what you do not control or what makes tests slow or nondeterministic:
