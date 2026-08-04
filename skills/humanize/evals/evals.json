@@ -46,6 +46,22 @@
         "No bold-first bullets and at most 2 em dashes",
         "Reviewer note is specific about what to check, not 'please take an in-depth look'"
       ]
+    },
+    {
+      "id": 4,
+      "name": "readme-rhythm",
+      "prompt": "Write a README for an open-source CLI called 'stencil' that converts Markdown files to styled PDFs via a headless browser. It installs with pip, takes a glob of .md files and an output directory, and produces one PDF per input file. The main sharp edge is that it needs Chrome or Chromium installed separately (it uses puppeteer under the hood, which won't auto-download in production). Performance: ~200ms per page on a cold start, ~40ms after the browser is warm. Target audience: developers who write docs in Markdown and need PDFs for distribution. Keep it under 400 words.",
+      "expected_output": "A README with varied paragraph lengths (at least one short paragraph of 1-2 lines), a code block showing the install-and-run path, no back-to-back same-mode blocks (tables, lists, or code blocks stacked without prose), and a close that lands on something specific rather than trailing off into a reference pointer.",
+      "files": [],
+      "assertions": [
+        "Contains the concrete numbers (200ms, 40ms) and the pip install instruction",
+        "The Chrome/Chromium prerequisite is stated plainly, not buried or softened",
+        "At least one paragraph is 1-2 lines long amid longer ones (paragraph length varies)",
+        "No sequence of three or more tables, code blocks, or bullet lists with no prose between them",
+        "The closing paragraph is substantive (a constraint, a restatement, a sharp edge) rather than a 'for more info' pointer or a weak summary",
+        "At most 2 em dashes, no bold-first bullet labels, no banned vocabulary",
+        "Under 400 words"
+      ]
     }
   ]
 }

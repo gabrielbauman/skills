@@ -14,9 +14,13 @@ swap. Most flagged phrases carry no information, so the fix is deletion.
 ## Process
 
 1. Draft for content. Say what you mean, in the order the reader needs it.
-2. Make one revision pass against the checklist below. Prefer cutting to
-   rephrasing.
-3. Load [references/tropes.md](references/tropes.md) only if something reads
+2. Make a structural pass on the draft: check pacing, section variety,
+   visual rhythm. This is the Document rhythm checklist below. It runs
+   before the sentence-level pass because structural problems can't be
+   fixed by polishing sentences.
+3. Make one revision pass against the sentence-level checklist below. Prefer
+   cutting to rephrasing.
+4. Load [references/tropes.md](references/tropes.md) only if something reads
    as AI-flavored but matches nothing on the checklist, or if you need the
    full catalog's definitions and examples to justify an edit to the user.
    Slop density is not a reason to load it: the checklist covers the common
@@ -25,6 +29,44 @@ swap. Most flagged phrases carry no information, so the fix is deletion.
 
 A single instance of any pattern below can be fine. Several different ones, or
 the same one twice, is the failure mode.
+
+## Document rhythm
+
+These apply to any piece longer than a few paragraphs. Run this pass on the
+whole document before checking individual sentences.
+
+**Paragraph pacing**
+- Uniform paragraph length is an AI signature: paragraph, paragraph, paragraph,
+  all the same visual weight, no relief. A long paragraph earns its length; a
+  short line after it lands. If every paragraph is 3-5 lines, vary them.
+- A dense section of 10+ lines without a line break or a short sentence to rest
+  on is a wall. Break it where the content naturally pivots: problem before
+  solution, setup before payoff, claim before evidence.
+- Key ideas buried mid-paragraph should stand alone. If a sentence is the
+  thesis of a section, the project's namesake, or the one claim the reader
+  should remember, give it its own paragraph.
+
+**Section variety**
+- Three or more tables, code blocks, or bullet lists in a row without prose
+  between them reads as generated scaffolding, not writing. Insert a short
+  prose paragraph between at least two of them, or turn one of them into prose.
+- Section headers followed immediately by another header (nothing between them)
+  suggest the document was outlined by a model filling slots. Either merge the
+  sections or write one sentence of transition.
+- A document that is all prose with no examples, tables, or code is as flat
+  as one that is all lists. Mix modes: a table after a paragraph, a code block
+  after a claim, a single-line callout between two sections.
+
+**Open and close**
+- The opening paragraph earns the next minute. State what the thing is and why
+  the reader should care, and stop. No warm-up, no history before the premise,
+  no "In today's fast-paced world of...".
+- The close should land, not trail off. The last paragraph carries
+  disproportionate weight; it cannot be a list of references, a "for more
+  information" pointer, or a weak summary. End on something that matters: a
+  constraint, an invitation, a sharp restatement of the premise. If the
+  document doesn't earn a strong close, cut the weak one and let the last
+  substantive section end it.
 
 ## Checklist
 
