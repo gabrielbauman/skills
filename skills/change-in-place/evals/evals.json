@@ -1,0 +1,61 @@
+{
+  "skill_name": "change-in-place",
+  "evals": [
+    {
+      "id": 1,
+      "name": "variant-helper-resistance",
+      "prompt": "Bug in our provisioning worker. We have this in retry.py:\n\n```python\ndef is_retryable(err):\n    return err.status in (429, 500, 502, 503)\n\n\ndef is_retryable_for_create(err):\n    # A 409 on create means another record took the name.\n    return is_retryable(err) and err.status != 409\n```\n\nTurns out user creates are special: the directory returns 423 Locked while it finishes provisioning the row, and we should retry that. Everywhere else a 423 is permanent. Add handling for it. There are 6 call sites across the worker.",
+      "expected_output": "The agent does not add a third predicate (is_retryable_for_user_create or similar). It identifies the existing two-function split as the problem, consolidates the rule into one function that takes the operation as a parameter, and updates the six call sites. It explains that a third variant would move the knowledge of which rule applies out of the function and into every call site, where picking wrong fails silently.",
+      "files": [],
+      "assertions": [
+        "Does not add a third predicate function layered on is_retryable_for_create or is_retryable",
+        "Consolidates the retry rule into a single function that takes the operation or resource kind as an input, rather than encoding it in the function name",
+        "Updates or explicitly plans to update the existing call sites rather than leaving old variants in place for compatibility",
+        "States a reason grounded in the call sites: with multiple near-identical predicates, each caller must pick the right one and a wrong pick does not fail loudly",
+        "Does not justify the new arrangement solely on line count or tidiness"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "field-owner-before-adding",
+      "prompt": "I need the Syncer to remember which records we already confirmed this run so the next cycle doesn't re-read them. Syncer is a long-lived struct with about 30 fields already and it runs a cycle every 60 seconds. Just add the tracking.",
+      "expected_output": "The agent treats a new field on a long-lived object as a decision requiring an owner: it names which code writes the state and which reads it, and asks whether the state is per-cycle (in which case it should be computed in the cycle and passed, not stored on the Syncer). If a field is genuinely warranted it is initialized in the constructor rather than lazily at the top of the cycle method, and the reset/expiry is deliberate rather than implicit.",
+      "files": [],
+      "assertions": [
+        "Distinguishes per-cycle state from state that must survive across cycles, and does not store per-cycle state on the long-lived struct by default",
+        "Names which code writes the new state and which code reads it, rather than adding a field with no stated owner",
+        "Does not lazily initialize the field at the top of the cycle method (if s.x == nil { s.x = ... }); initializes it with the rest of the struct if a field is used at all",
+        "Treats clearing or expiring the state as an explicit decision with a stated rule, not an implicit side effect of another step",
+        "Notes that a struct already carrying ~30 fields is itself evidence worth raising, rather than silently making it 31"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "green-tests-do-not-validate-placement",
+      "prompt": "Can you sanity check this before I merge? Group members were getting dropped when the source listing was incomplete, so I added a guard in the caller that skips the member diff whenever `source.MembersComplete` is false. I didn't touch applyMemberDiff itself since it has four other callers. Full suite is green, and I added members_incomplete_test.go with 5 new cases that all pass.",
+      "expected_output": "The agent points out that a green suite after an additive guard proves only that the untouched path still works, and is not evidence the fix went to the right place. It asks whether applyMemberDiff is the code that is actually wrong, and whether the other four callers have the same bug now guarded in only one of five places. It also flags the new per-incident test file as the test suite accreting the same way, and suggests the cases belong in the existing file for that behavior, named for the behavior rather than the incident.",
+      "files": [],
+      "assertions": [
+        "States that the passing suite does not validate where the fix was placed, because the additive guard left the original path untouched",
+        "Asks whether applyMemberDiff is itself wrong, and whether the other four callers need the same guard, rather than accepting the single-caller fix",
+        "Identifies 'it has four other callers' as a reason to read those callers, not as a reason to avoid changing the function",
+        "Flags the new per-incident test file (members_incomplete_test.go) as belonging with the existing tests for that behavior, named for the behavior rather than the bug report",
+        "Does not simply approve the change because the tests pass"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "layering-is-correct-here",
+      "prompt": "The generated protobuf client in gen/pb/billing_client.go returns a zero Timestamp instead of an error when the server omits the field, which breaks our invoice math. The file has a 'Code generated by protoc-gen-go. DO NOT EDIT.' header and regenerates on every build. Fix it.",
+      "expected_output": "The agent recognizes that generated code is a legitimate exception to changing in place: edits there are erased on the next build. It wraps or adapts at the boundary rather than editing the generated file, and leaves a comment recording what is being worked around and why, so the next reader finds a decision rather than an unexplained wrapper. It does not force an in-place edit of the generated file.",
+      "files": [],
+      "assertions": [
+        "Does not edit the generated file, and gives the regeneration-on-build reason rather than treating it as a style preference",
+        "Puts the correction in a wrapper, adapter, or boundary function the project owns",
+        "Leaves a comment at the added code recording what it works around, so the layer reads as a decision rather than an accident",
+        "Does not recommend editing the upstream proto or codegen toolchain as the only option without addressing the immediate breakage",
+        "Does not apply the change-in-place rule dogmatically against a case where layering is the correct answer"
+      ]
+    }
+  ]
+}
