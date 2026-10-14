@@ -54,6 +54,15 @@
       "skills": ["./skills/bug-reports"]
     },
     {
+      "name": "change-in-place",
+      "description": "Put a fix where the wrong behavior is instead of adding code beside it: a near-copy of an existing function means the original is wrong, a new field on a long-lived object needs a named owner, a default parameter added to spare existing callers hides which ones chose it, and green tests after an additive fix only prove the old path still works",
+      "source": "./",
+      "strict": false,
+      "category": "workflow",
+      "tags": ["code-quality", "refactoring", "maintenance", "bugs", "technical-debt"],
+      "skills": ["./skills/change-in-place"]
+    },
+    {
       "name": "changelog",
       "description": "Write CHANGELOG.md entries by curating the diff for end users instead of transcribing the git log: Common Changelog format, breaking changes bolded first with migration pointers, and rules for what deserves no entry at all",
       "source": "./",
